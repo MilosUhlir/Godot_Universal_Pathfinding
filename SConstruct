@@ -14,8 +14,8 @@ def validate_parent_dir(key, val, env):
         raise UserError("'%s' is not a directory: %s" % (key, os.path.dirname(val)))
 
 
-libname = "EXTENSION-NAME"
-projectdir = "demo"
+libname = "UNIVERSAL-2D-PATHFINDING"
+projectdir = "Pathfinder"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
