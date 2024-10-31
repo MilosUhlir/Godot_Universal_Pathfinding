@@ -18,25 +18,17 @@ class Universal_2D_Pathinding : public Node {
 	GDCLASS(Universal_2D_Pathinding, Node)
 
 private:
-	std::vector<std::pair<int, int>> Path;
+	// Variables
+	std::vector<std::pair<int, int>> Path;			// array (vector) of tile coordinates
+	int MAX_PATH_LENGTH;							// maximum possible length of path before pathfinder termination
+	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
+	TileMapLayer TileMap;							// TileMapLayer object to read Tilemap Data like tileset type and tile atlas
+	std::vector<Vector2i> Waypoints;				// an array of user defined waypoints which will be used to generate the path
+	bool UseWaypoints;								// whether to use waypoints or not
+	Vector2i HardEnd;								// an override of the pathfinding target location (e.g. for tower defense where you only need paths to one set point)
 
-	int MAX_PATH_LENGTH;	// maximum possible length of path before pathfinder termination
-	// PathDiversion; // How far will the actual path be from the shortest path (in tiles?)
-	TileMapLayer TileMap;
-	enum SelectAlgorithm {
-		AStar,
-		DynamicPrograming,
-		Dijkstra
-	};
-	std::vector<Vector2i> Waypoints;
-	bool UseWaypoints;
-	enum WaypointOrder {
-		All_In_Order,
-		All_Random,
-		Single_random,
-		Single_In_Order
-	};
-	Vector2i HardEnd;
+	// Methods
+
 
 
 protected:
@@ -44,11 +36,30 @@ protected:
 
 
 public:
-	Universal_2D_Pathinding();
-	~Universal_2D_Pathinding();
+	// Variables
+	enum SelectAlgorithm {							// enum for selection of Pathfinding algorithm
+		AStar,
+		DynamicPrograming,
+		Dijkstra
+	};
+	enum WaypointOrder {							// enum for selecting the order of use for waypoints
+		All_In_Order,
+		All_Random,
+		Single_random,
+		Single_In_Order
+	};
 
-	//void _process(double delta) override;
-	void _set(const property);
+
+	// Methods
+
+		// Constructor / Destructor
+		Universal_2D_Pathinding();
+		~Universal_2D_Pathinding();
+	
+		// Setters / Getters
+			// MAX_PATH_LENGTH
+			void set_MAX_PATH_LENGTH(const int new_max_length);
+			int get_MAX_PATH_LENGTH() const;
 	
 };
 
