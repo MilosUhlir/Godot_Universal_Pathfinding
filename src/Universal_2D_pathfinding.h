@@ -19,6 +19,13 @@ class Universal_2D_Pathinder : public Node {
 	GDCLASS(Universal_2D_Pathinder, Node)
 
 private:
+
+
+
+protected:
+	static void _bind_methods();
+
+
 	// internal variables
 	std::vector<std::pair<int, int>> Path;			// array (vector) of tile coordinates
 	std::vector<std::pair<int, int>> SearchVector;	// array of neighbor tiles
@@ -36,6 +43,9 @@ private:
 		};
 	};
 	
+	std::vector<struct Node_Data> OPEN_list;
+	std::vector<struct Node_Data> CLOSED_list;
+
 	std::vector<std::vector<struct Node_Data>> Preprocessed_Map;
 	
 	
@@ -45,16 +55,20 @@ private:
 	
 	
 	// Methods
-	
+		// Helper methods
+			// label calculation
+			float Label_Calculator(struct Node_parent, struct Node);
+			// neighbor search
 
-
-protected:
-	static void _bind_methods();
-	
+			// find minimal label
+			Node_Data find_minimum_label();
 
 
 public:
 	// Variables
+
+	Vector2i Start_position;
+
 	enum Pathfinder {							// enum for selection of Pathfinding algorithm
 		AStar,
 		DynamicPrograming,
@@ -86,13 +100,20 @@ public:
 		~Universal_2D_Pathinder();
 	
 		// Main methods
+
+			// Pathifinder
+			std::vector<std::vector<Vector2i>> Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array);
+
 			// Algorithms
 				// A*
-				std::vector<std::pair<int, int>> AStar_Pathfinder(Vector2i start_node, Vector2i end_node);
+				std::vector<Vector2i> AStar_Pathfinder(Vector2i& start_node, Vector2i& end_node);
+				
 				// Dynamic Programming
-
+				std::vector<Vector2i> DP_Pathfinder(Vector2i& start_node, Vector2i& end_node);
+				
 				// Dijkstra
 
+				
 				// other...
 			
 
@@ -100,12 +121,12 @@ public:
 			std::vector<std::vector<struct Node_Data>> Preprocessor();
 
 
-		// Helper methods
-			// label calculation
 
-			// neighbor search
 
 		
+
+
+
 		/*// Setters / Getters
 			// MAX_PATH_LENGTH
 			void set_MAX_PATH_LENGTH(const int new_max_length);

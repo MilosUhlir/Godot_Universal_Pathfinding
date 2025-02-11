@@ -28,12 +28,56 @@ Universal_2D_Pathinder::~Universal_2D_Pathinder() {
 
 // Main methods
 
+    // Pathfinder
+    std::vector<std::vector<Vector2i>> Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array);
+
+
     // Algorithms
         // A*
-        std::vector<std::pair<int, int>> Universal_2D_Pathinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
+        std::vector<Vector2i> Universal_2D_Pathinder::AStar_Pathfinder(Vector2i& start_node, Vector2i& end_node) {
 
-            // 
+            // put first node into OPEN, CLOSED is empty
+            int start_x = start_node.x;
+            int start_y = start_node.y;
+            OPEN_list.push_back(Preprocessed_Map[start_x][start_y]);
 
+            Astar_while:
+            while (!OPEN_list.empty()) {
+                // if OPEN list is empty there is no solution -> terminate search
+                if (OPEN_list.empty()) {
+                    break;
+                };
+                
+                // pull node with the smallest f(i) value in OPEN, if multiple check if any is end node
+                
+                    // find first node with minimal f(i)
+                    auto min_fi_node = std::min_element(OPEN_list.begin(), OPEN_list.end(),
+                        [](const Node_Data& a, const Node_Data& b) {
+                            return a.Node_Label < b.Node_Label;
+                        });
+                    
+                    float min_fi = min_fi_node->Node_Label;
+                    std::vector<Node_Data> min_nodes;
+
+                    // find all nodes with minimal f(i)
+                    for (const auto& minima : OPEN_list) {
+                        if (minima.Node_Label == min_fi){
+                            min_nodes.push_back(minima);
+                        }
+                    }
+
+                    Node_Data current_node;
+                    for (const auto& node : min_nodes) {
+                        if (node.Node_coordinates == end_node) {
+                            current_node = node;
+                        }
+                        else {
+                            current_node = min_nodes[0];
+                        }
+                    }
+                    
+            
+            }
         }
 
 
@@ -64,6 +108,16 @@ Universal_2D_Pathinder::~Universal_2D_Pathinder() {
         }
     }
 
+    // Helper methods
+        // label calculation
+        float Label_Calculator(struct Node_parent, struct Node);
+        // neighbor search
+
+        // find minimal label
+        // Node_Data find_minimum_label() {
+
+        //     return minimal_node;
+        // };
 
 
 
