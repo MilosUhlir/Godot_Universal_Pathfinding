@@ -29,7 +29,9 @@ Universal_2D_Pathinder::~Universal_2D_Pathinder() {
 // Main methods
 
     // Pathfinder
-    std::vector<std::vector<Vector2i>> Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array);
+    std::vector<std::vector<Vector2i>> Universal_2D_Pathinder::Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array) {
+
+    };
 
 
     // Algorithms
@@ -50,31 +52,6 @@ Universal_2D_Pathinder::~Universal_2D_Pathinder() {
                 
                 // pull node with the smallest f(i) value in OPEN, if multiple check if any is end node
                 
-                    // find first node with minimal f(i)
-                    auto min_fi_node = std::min_element(OPEN_list.begin(), OPEN_list.end(),
-                        [](const Node_Data& a, const Node_Data& b) {
-                            return a.Node_Label < b.Node_Label;
-                        });
-                    
-                    float min_fi = min_fi_node->Node_Label;
-                    std::vector<Node_Data> min_nodes;
-
-                    // find all nodes with minimal f(i)
-                    for (const auto& minima : OPEN_list) {
-                        if (minima.Node_Label == min_fi){
-                            min_nodes.push_back(minima);
-                        }
-                    }
-
-                    Node_Data current_node;
-                    for (const auto& node : min_nodes) {
-                        if (node.Node_coordinates == end_node) {
-                            current_node = node;
-                        }
-                        else {
-                            current_node = min_nodes[0];
-                        }
-                    }
                     
             
             }
@@ -114,10 +91,38 @@ Universal_2D_Pathinder::~Universal_2D_Pathinder() {
         // neighbor search
 
         // find minimal label
-        // Node_Data find_minimum_label() {
+        Universal_2D_Pathinder::Node_Data Universal_2D_Pathinder::find_minimum_label(std::vector<const Universal_2D_Pathinder::Node_Data&> open_list, Vector2i& end_node) {
+            
+            // find first node with minimal f(i)
+            auto min_fi_node = std::min_element(OPEN_list.begin(), OPEN_list.end(),
+                [](const Node_Data& a, const Node_Data& b) {
+                    return a.Node_Label < b.Node_Label;
+                });
+            
+            float min_fi = min_fi_node->Node_Label;
+            std::vector<Node_Data> min_nodes;
 
-        //     return minimal_node;
-        // };
+            // find all nodes with minimal f(i)
+            for (const auto& minima : OPEN_list) {
+                if (minima.Node_Label == min_fi){
+                    min_nodes.push_back(minima);
+                }
+            }
+
+            // search for if any of the found nodes are end nodes
+            Node_Data current_node = min_nodes[0];
+            for (const auto& node : min_nodes) {            // loops through the list of found nodes with minimal label value
+                if (node.Node_coordinates == end_node) {    // if any node is the end node it is selected
+                    current_node = node;
+                    break;
+                }
+                else {
+                    current_node = min_nodes[0];
+                }
+            }
+
+            return current_node;
+        };
 
 
 

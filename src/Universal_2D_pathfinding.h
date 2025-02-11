@@ -20,7 +20,35 @@ class Universal_2D_Pathinder : public Node {
 
 private:
 
+	struct Node_Data {								// Structure to store all needed node data in one spot
+		Vector2i Node_coordinates;					// map coordinates of current node
+		int Node_cost;								// cost of movement onto this node
+		std::vector<Vector2i> Node_Neighbors; 		// array of coordinates of neighboring nodes
+		float Node_Label;							// the total cost to reach this node from start point
+		int Node_state;
+	};
 
+	// Methods
+
+	// Algorithms
+		// A*
+		std::vector<Vector2i> AStar_Pathfinder(Vector2i& start_node, Vector2i& end_node);
+		
+		// Dynamic Programming
+		std::vector<Vector2i> DP_Pathfinder(Vector2i& start_node, Vector2i& end_node);
+		
+		// Dijkstra
+
+		
+		// other...
+
+	// Helper methods
+		// label calculation
+		float Label_Calculator(struct Node_parent, struct Node);
+		// neighbor search
+
+		// find minimal label
+		Node_Data find_minimum_label(std::vector<const Node_Data&> open_list, Vector2i& end_node);
 
 protected:
 	static void _bind_methods();
@@ -33,15 +61,7 @@ protected:
 	Vector2i square_search_array[8];				// search array for square(and isometrtic) tile grids
 	Vector2i hex_search_array[6];					// search array for hexagonal tile grid
 
-	struct Node_Data {								// Structure to store all needed node data in one spot
-		Vector2i Node_coordinates;					// map coordinates of current node
-		int Node_cost;								// cost of movement onto this node
-		std::vector<Vector2i> Node_Neighbors; 		// array of coordinates of neighboring nodes
-		float Node_Label;							// the total cost to reach this node from start point
-		enum Node_state {
-			
-		};
-	};
+	
 	
 	std::vector<struct Node_Data> OPEN_list;
 	std::vector<struct Node_Data> CLOSED_list;
@@ -54,18 +74,13 @@ protected:
 	
 	
 	
-	// Methods
-		// Helper methods
-			// label calculation
-			float Label_Calculator(struct Node_parent, struct Node);
-			// neighbor search
 
-			// find minimal label
-			Node_Data find_minimum_label();
 
 
 public:
 	// Variables
+
+	
 
 	Vector2i Start_position;
 
@@ -104,21 +119,11 @@ public:
 			// Pathifinder
 			std::vector<std::vector<Vector2i>> Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array);
 
-			// Algorithms
-				// A*
-				std::vector<Vector2i> AStar_Pathfinder(Vector2i& start_node, Vector2i& end_node);
-				
-				// Dynamic Programming
-				std::vector<Vector2i> DP_Pathfinder(Vector2i& start_node, Vector2i& end_node);
-				
-				// Dijkstra
 
-				
-				// other...
 			
 
 			// Preprocessor
-			std::vector<std::vector<struct Node_Data>> Preprocessor();
+			std::vector<std::vector<Universal_2D_Pathinder::Node_Data>> Preprocessor();
 
 
 
