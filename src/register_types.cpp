@@ -3,6 +3,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
+// #include "Universal_2D_pathfinder.h"
 
 using namespace godot;
 
@@ -11,7 +12,7 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-	// GDREGISTER_CLASS(UNIVERSAL-2D-PATHFINDING);
+	// GDREGISTER_CLASS(UNIVERSAL_2D_PATHFINDER);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {

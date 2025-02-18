@@ -14,8 +14,8 @@ def validate_parent_dir(key, val, env):
         raise UserError("'%s' is not a directory: %s" % (key, os.path.dirname(val)))
 
 
-libname = "UNIVERSAL-2D-PATHFINDING"
-projectdir = "Pathfinder"
+libname = "Universal_2D_Pathfinder"
+projectdir = "Universal_2D_Pathfinder"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
@@ -64,8 +64,9 @@ Run the following command to download godot-cpp:
     git submodule update --init --recursive""")
     sys.exit(1)
 
-env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
-
+env = SConscript("C:/GITHUB/GitHub_Main_Folder/Godot_Universal_Pathfinding/godot-cpp/SConstruct", {"env": env, "customs": customs})
+# C:/GITHUB/GitHub_Main_Folder/Godot_Universal_Pathfinding/godot-cpp/SConstruct
+# godot-cpp/SConstruct
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")
 
