@@ -2,7 +2,6 @@
 #define UNIVERSAL_2D_PATHFINDER_H
 
 // Godot includes
-#include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/tile_map_layer.hpp>
 
 
@@ -11,15 +10,20 @@
 #include <map>
 
 
-// #define MAX_PATH_LENGTH 10000
-
-
 namespace godot {
 
-class Universal_2D_Pathfinder : public Node {
-	GDCLASS(Universal_2D_Pathfinder, Node)
+class Universal_2D_Pathfinder : public TileMapLayer {
+	GDCLASS(Universal_2D_Pathfinder, TileMapLayer)
 
 private:
+
+	// internal variables
+	std::vector<std::pair<int, int>> Path;			// array (vector) of tile coordinates
+	std::vector<std::pair<int, int>> SearchVector;	// array of neighbor tiles
+	TileSet* Map_tileset;							// TileSet object
+	Vector2i square_search_array[8];				// search array for square(and isometrtic) tile grids
+	Vector2i hex_search_array[6];					// search array for hexagonal tile grid
+
 
 	struct Node_Data {								// Structure to store all needed node data in one spot
 		std::pair<int, int> Node_coordinates;		// map coordinates of current node
@@ -60,58 +64,54 @@ private:
 protected:
 	static void _bind_methods();
 
-	
-
-	// internal variables
-	std::vector<std::pair<int, int>> Path;			// array (vector) of tile coordinates
-	std::vector<std::pair<int, int>> SearchVector;	// array of neighbor tiles
-	TileSet* Map_tileset;							// TileSet object
-	Vector2i square_search_array[8];				// search array for square(and isometrtic) tile grids
-	Vector2i hex_search_array[6];					// search array for hexagonal tile grid
-
 	// accessible parameters
-	
-	
-	
-
-
 
 public:
+
+	// Constructor / Destructor
+	Universal_2D_Pathfinder();
+	~Universal_2D_Pathfinder();
+
 	// Variables
-
-	
-
 	Vector2i Start_position;
 
 	enum Pathfinder {							// enum for selection of Pathfinding algorithm
 		AStar,
-		DynamicPrograming,
+		Astar_Exponential,
+		Dynamic_Programing,
 		Dijkstra
 	};
+
 	enum WaypointOrder {							// enum for selecting the order of use for waypoints
+		No_Waypoints,
 		All_In_Order,
 		All_Random,
 		Single_random,
 		Single_In_Order
 	};
+
 	int MAX_PATH_LENGTH;							// maximum possible length of path before pathfinder termination
+	
 	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
+	
 	TileMapLayer Map;								// TileMapLayer object to read Map Data like tileset type and tile atlas
+	
 	std::vector<Vector2i> Waypoints;				// an array of user defined waypoints which will be used to generate the path
+	
 	bool UseWaypoints;								// whether to use waypoints or not
+	
 	Vector2i HardEnd;								// an override of the pathfinding target location (e.g. for tower defense where you only need paths to one set point)
-	// int Pathfinder;
-	Vector2i map_size = Vector2i(0,0);								// Coordinates of furthest tile from origin (0,0)
+	
+	Vector2i map_size = Vector2i(0,0);				// Coordinates of furthest tile from origin (0,0)
+	
 	int map_size_x;									// X axis size of map
+	
 	int map_size_y;									// Y axis size of map
+	
 	Dictionary costs_dictionary;					// dictionary extracted from .JSON file containing all costs for each tile variant
 	
 
 	// Methods
-
-		// Constructor / Destructor
-		Universal_2D_Pathfinder();
-		~Universal_2D_Pathfinder();
 	
 		// Main methods
 
@@ -123,12 +123,6 @@ public:
 
 			// Preprocessor
 			std::vector<std::vector<Universal_2D_Pathfinder::Node_Data>> Preprocessor();
-
-
-
-
-		
-
 
 
 		/*// Setters / Getters
