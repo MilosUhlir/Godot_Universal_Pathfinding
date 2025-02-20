@@ -7,17 +7,23 @@ using namespace godot;
 
 
 void Universal_2D_Pathfinder::_bind_methods() {
+    // add methods
+    ClassDB::bind_method(D_METHOD("Pathfinder"), &Universal_2D_Pathfinder::Pathfinder);
+
+    // add propperties
+    // ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "time_passed"),,);
+
 }
 
 Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
     // initialization of variables
-    Path;
-    MAX_PATH_LENGTH = 100000;
+    // Path;
+    // MAX_PATH_LENGTH = 100000;
     // PathDiversion
-    Map;
-    Map_tileset = Map.get_tile_set().operator->();
+    // Map;
+    // Map_tileset = Map.get_tile_set().operator->();
     
-
+    time_passed = 0.0;
 
 }
 
@@ -26,18 +32,30 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // cleanup
 }
 
+void Universal_2D_Pathfinder::_process(double delta) {
+    time_passed += delta;
+    Vector2 new_position = Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)));
+    set_position(new_position);
+    
+}
+
 // Main methods
 
     // Pathfinder
     // std::vector<std::vector<Vector2i>> Universal_2D_Pathfinder::Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array) {
 
     // };
-    std::vector<std::vector<std::pair<int, int>>> Universal_2D_Pathfinder::Pathfinder() {
-        std::vector<std::vector<std::pair<int, int>>> test = {{{1,1}}};
-        return test;
-    };
+    Array Universal_2D_Pathfinder::Pathfinder() {
+        Array output;
+        PackedVector2Array test;
+        test.append(Vector2i(1,15));
+        output.append(test);
+        test.append(Vector2i(2,59));
+        output.append(test);
+        return output;
+    }
 
-
+/*
     // Algorithms
         // A*
         std::vector<Vector2i> Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
@@ -98,7 +116,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // Helper methods
         // label calculation
-        float Label_Calculator(struct Node_Data Node_Parent, struct Node_Data Node);
+        double Label_Calculator(struct Node_Data Node_Parent, struct Node_Data Node);
         // neighbor search
 
         // find minimal label
@@ -110,7 +128,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     return a.Node_Label < b.Node_Label;
                 });
             
-            float min_fi = min_fi_node->Node_Label;
+            double min_fi = min_fi_node->Node_Label;
             std::vector<Node_Data> min_nodes;
 
             // find all nodes with minimal f(i)
@@ -136,8 +154,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         };
 
 
+*/
 
-/*// getters and setters
+/*
+// getters and setters
 
     // MAX_PATH_LENGTH
     void Universal_2D_Pathfinder::set_MAX_PATH_LENGTH(const int new_max_length) {
@@ -152,7 +172,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
 	// tilemap
 	void Universal_2D_Pathfinder::set_Map(const TileMapLayer new_Map) {
-        // Map = new_Map;
+        Map = new_Map;
     }
 	TileMapLayer Universal_2D_Pathfinder::get_Map() const {
         return Map;
@@ -181,12 +201,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 	Vector2i Universal_2D_Pathfinder::get_HardEnd() const {
         return HardEnd;
     }
+*/
 
-	// pathfinder
-	void Universal_2D_Pathfinder::set_Pathfinder(const int new_pathfinder) {
-        Pathfinder = new_pathfinder;
-    }
-	int Universal_2D_Pathfinder::get_Pathfinder() const {
-        return Pathfinder;
-    }
-    */
+    
+   
