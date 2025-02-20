@@ -1,14 +1,14 @@
 
 #include "Universal_2D_Pathfinder.h"
 #include <godot_cpp/core/class_db.hpp>
-
+#include <godot_cpp/variant/utility_functions.hpp>
 
 using namespace godot;
 
 
 void Universal_2D_Pathfinder::_bind_methods() {
     // add methods
-    ClassDB::bind_method(D_METHOD("Pathfinder"), &Universal_2D_Pathfinder::Pathfinder);
+    ClassDB::bind_method(D_METHOD("Pathfinder", "Start_points_array", "End_points_array", "debug"), &Universal_2D_Pathfinder::Pathfinder);
 
     // add propperties
     // ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "time_passed"),,);
@@ -42,17 +42,61 @@ void Universal_2D_Pathfinder::_process(double delta) {
 // Main methods
 
     // Pathfinder
-    // std::vector<std::vector<Vector2i>> Universal_2D_Pathfinder::Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array) {
+    Array Universal_2D_Pathfinder::Pathfinder(Array Start_points_array, Array End_points_array, const bool& debug) {
+        Array Paths;
+        Array Path;
+        Path.append(Vector2i(1,5));
+        Path.append(Vector2i(5,48));
+        Paths.append(Path);
+        Path.clear();
+        Path.append(Vector2i(10,25));
+        Path.append(Vector2i(45,26));
+        Paths.append(Path);
 
-    // };
-    Array Universal_2D_Pathfinder::Pathfinder() {
-        Array output;
-        PackedVector2Array test;
-        test.append(Vector2i(1,15));
-        output.append(test);
-        test.append(Vector2i(2,59));
-        output.append(test);
-        return output;
+        // one to one path
+        if (Start_points_array.size() == 1 & End_points_array.size() == 1) {
+            (debug == true) ? UtilityFunctions::print("one to one path") : nullptr;
+
+        }
+
+        // many to one paths
+        else if (Start_points_array.size() > 1 & End_points_array.size() == 1) {
+            (debug == true) ? UtilityFunctions::print("many to one paths") : nullptr;
+
+        }
+
+        // one to many paths
+        else if (Start_points_array.size() == 1 & End_points_array.size() > 1) {
+            (debug == true) ? UtilityFunctions::print("one to many paths") : nullptr;
+            
+        }
+
+        // many to many paths (MUST HAVE the same number of starts and ends!!!)
+        else if (Start_points_array.size() > 1 & End_points_array.size() > 1) {
+            (debug == true) ? UtilityFunctions::print("many to many paths") : nullptr;
+
+            // error handling of arrays are not the same size
+            Array err = {};
+            ERR_FAIL_COND_V_EDMSG(Start_points_array.size() != End_points_array.size(), err, "Start and End point arrays are not the same size");
+
+            for (int i = 0; i < Start_points_array.size(); i++)
+            {
+                /* code */
+                
+            }
+            
+            
+            
+            
+            
+        }
+        
+
+        
+        
+        
+
+        return Paths;
     }
 
 /*

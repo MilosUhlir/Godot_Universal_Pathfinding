@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://cwpyuw0k0h61v"]
+[gd_scene load_steps=4 format=3 uid="uid://cwpyuw0k0h61v"]
 
 [ext_resource type="Texture2D" uid="uid://dbx66sovxd1" path="res://icon.svg" id="1_mouf7"]
 [ext_resource type="Script" path="res://sprite_2d.gd" id="2_3db0g"]
-[ext_resource type="Script" path="res://universal_2d_pathfinder.gd" id="2_t1kh4"]
 
 [sub_resource type="TileSet" id="TileSet_7vequ"]
 tile_layout = 5
@@ -11,14 +10,8 @@ tile_size = Vector2i(128, 128)
 
 [node name="main" type="Node2D"]
 
-[node name="Universal_2D_Pathfinder" type="Universal_2D_Pathfinder" parent="."]
-position = Vector2(3.35602, 18.5512)
-texture = ExtResource("1_mouf7")
-centered = false
-script = ExtResource("2_t1kh4")
-
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-185.25, -199.155)
+position = Vector2(10.0109, 15.8527)
 texture = ExtResource("1_mouf7")
 centered = false
 script = ExtResource("2_3db0g")
@@ -26,3 +19,6 @@ test3 = PackedVector2Array(0, 0, 0, 0)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_7vequ")
+
+[node name="Universal_2D_Pathfinder" type="Universal_2D_Pathfinder" parent="."]
+position = Vector2(0.0108527, 5.85272)

@@ -2,7 +2,7 @@
 #define UNIVERSAL_2D_PATHFINDER_H
 
 // Godot includes
-#include <godot_cpp/classes/sprite2d.hpp>
+#include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/classes/tile_map_layer.hpp>
 
 
@@ -13,8 +13,8 @@
 
 namespace godot {
 
-class Universal_2D_Pathfinder : public Sprite2D {
-	GDCLASS(Universal_2D_Pathfinder, Sprite2D)
+class Universal_2D_Pathfinder : public Node2D {
+	GDCLASS(Universal_2D_Pathfinder, Node2D)
 
 private:
 
@@ -127,8 +127,8 @@ public:
 		// Main methods
 
 			// Pathifinder
-			// std::vector<std::vector<Vector2i>> Pathfinder(std::vector<Vector2i>& Start_points_array, std::vector<Vector2i>& End_points_array, std::vector<Vector2i>& Waypoints_array);
-			Array Pathfinder();
+			Array Pathfinder(Array Start_points_array, Array End_points_array, const bool& debug = false);
+
 /*
 			
 
