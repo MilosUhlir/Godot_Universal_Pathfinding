@@ -23,11 +23,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	time_passed += delta
 	#rotation += PI * delta
-	position = Vector2(10,10) + Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)))
+	position = Vector2(50,20) + Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)))
 	#set_position(new_position)
 	
 
 func _exit_tree() -> void:
-	test = pathfinder.Pathfinder([Vector2i(1,1), Vector2i(2,2)], [Vector2i(5,5), Vector2i(1,1), Vector2i(2,2)], false)
+	test = pathfinder.Pathfinder([Vector2i(1,1), Vector2i(2,2)], [Vector2i(5,5), Vector2i(1,1), Vector2i(2,2)], true)
 	print(test)
 	

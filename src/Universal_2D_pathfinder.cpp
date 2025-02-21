@@ -2,6 +2,9 @@
 #include "Universal_2D_Pathfinder.h"
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/editor_interface.hpp>
+
 
 using namespace godot;
 
@@ -22,7 +25,11 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
     // PathDiversion
     // Map;
     // Map_tileset = Map.get_tile_set().operator->();
-    
+
+    // Node* scene_tree = SceneTree::get_current_scene;
+    // Node* current_node;
+
+
     time_passed = 0.0;
 
 }
@@ -30,7 +37,12 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
 
 Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // cleanup
+    if (Engine::get_singleton()->is_editor_hint()) {
+        UtilityFunctions::print("Clean up message");
+        // run preprocessor on scene close in editor
+    }
 }
+
 
 void Universal_2D_Pathfinder::_process(double delta) {
     time_passed += delta;
@@ -38,6 +50,7 @@ void Universal_2D_Pathfinder::_process(double delta) {
     set_position(new_position);
     
 }
+
 
 // Main methods
 

@@ -13,8 +13,8 @@
 
 namespace godot {
 
-class Universal_2D_Pathfinder : public Node2D {
-	GDCLASS(Universal_2D_Pathfinder, Node2D)
+class Universal_2D_Pathfinder : public TileMapLayer {
+	GDCLASS(Universal_2D_Pathfinder, TileMapLayer)
 
 private:
 
@@ -116,7 +116,11 @@ public:
 	Universal_2D_Pathfinder();
 	~Universal_2D_Pathfinder();
 
+	void save_handler();
+	
 	void _process(double delta) override;
+
+
 
 	double time_passed;
 	

@@ -11,7 +11,7 @@ tile_size = Vector2i(128, 128)
 [node name="main" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(10.0109, 15.8527)
+position = Vector2(58.7311, 22.2874)
 texture = ExtResource("1_mouf7")
 centered = false
 script = ExtResource("2_3db0g")
@@ -21,4 +21,4 @@ test3 = PackedVector2Array(0, 0, 0, 0)
 tile_set = SubResource("TileSet_7vequ")
 
 [node name="Universal_2D_Pathfinder" type="Universal_2D_Pathfinder" parent="."]
-position = Vector2(0.0108527, 5.85272)
+position = Vector2(8.73107, 2.28736)
