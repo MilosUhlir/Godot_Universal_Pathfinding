@@ -15,6 +15,7 @@ void Universal_2D_Pathfinder::_bind_methods() {
 
     // add propperties
     // ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "time_passed"),,);
+    ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "Start_position"), "set_Start_position", "get_Start_position");
 
 }
 
@@ -26,8 +27,6 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
     // Map;
     // Map_tileset = Map.get_tile_set().operator->();
 
-    // Node* scene_tree = SceneTree::get_current_scene;
-    // Node* current_node;
 
 
     time_passed = 0.0;
@@ -44,12 +43,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 }
 
 
-void Universal_2D_Pathfinder::_process(double delta) {
-    time_passed += delta;
-    Vector2 new_position = Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)));
-    set_position(new_position);
+// void Universal_2D_Pathfinder::_process(double delta) {
+//     time_passed += delta;
+//     Vector2 new_position = Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)));
+//     set_position(new_position);
     
-}
+// }
 
 
 // Main methods
@@ -95,6 +94,7 @@ void Universal_2D_Pathfinder::_process(double delta) {
             for (int i = 0; i < Start_points_array.size(); i++)
             {
                 /* code */
+
                 
             }
             
@@ -148,10 +148,10 @@ void Universal_2D_Pathfinder::_process(double delta) {
 
         // other...
 
-
+*/
 
     // preprocessor
-    std::vector<std::vector<Universal_2D_Pathfinder::Node_Data>> Universal_2D_Pathfinder::Preprocessor() {
+    Array Universal_2D_Pathfinder::Preprocessor() {
         // Vector2i map_size = Vector2i(0,0), TileMapLayer Map
         Vector2i start_coords(0,0);
         int map_size_x = map_size[0];
@@ -167,9 +167,11 @@ void Universal_2D_Pathfinder::_process(double delta) {
         }
 
 
-        std::vector<std::vector<Node_Data>> placeholder;
+        Array placeholder = {};
         return placeholder;
     }
+
+/*
 
     // Helper methods
         // label calculation
@@ -213,9 +215,19 @@ void Universal_2D_Pathfinder::_process(double delta) {
 
 */
 
-/*
+
 // getters and setters
 
+    // Start_position
+    void Universal_2D_Pathfinder::set_Start_position(const Vector2i new_start) {
+        Start_position = new_start;
+    }
+    Vector2i Universal_2D_Pathfinder::get_Start_position() {
+        return Start_position;
+    }
+
+
+/*
     // MAX_PATH_LENGTH
     void Universal_2D_Pathfinder::set_MAX_PATH_LENGTH(const int new_max_length) {
         MAX_PATH_LENGTH = new_max_length;
@@ -261,4 +273,3 @@ void Universal_2D_Pathfinder::_process(double delta) {
 */
 
     
-   

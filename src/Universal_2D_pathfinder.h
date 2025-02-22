@@ -18,10 +18,10 @@ class Universal_2D_Pathfinder : public TileMapLayer {
 
 private:
 
-	/*
+	/**/
 
 	// accessible variables
-	Vector2i Start_position;
+	
 
 	enum Algorithm_Type {							// enum for selection of Pathfinding algorithm
 		AStar,										// Standard A* algorithm (mainly for realtime pathfinding)
@@ -103,7 +103,7 @@ private:
 		// find minimal label
 		// Node_Data find_minimum_label(std::vector<Node_Data> open_list, std::pair<int, int> end_node);
 
-	*/
+
 
 protected:
 	static void _bind_methods();
@@ -124,7 +124,10 @@ public:
 
 	double time_passed;
 	
-	
+	// accessible parameters
+	Vector2i Start_position;
+	void set_Start_position(const Vector2i new_start);
+	Vector2i get_Start_position();
 	
 	// Methods
 	
@@ -133,13 +136,13 @@ public:
 			// Pathifinder
 			Array Pathfinder(Array Start_points_array, Array End_points_array, const bool& debug = false);
 
-/*
+
 			
 
 			// Preprocessor
-			std::vector<std::vector<Universal_2D_Pathfinder::Node_Data>> Preprocessor();
+			Array Preprocessor();
 
-
+/*
 		// Setters / Getters
 			// MAX_PATH_LENGTH
 			void set_MAX_PATH_LENGTH(const int new_max_length);
