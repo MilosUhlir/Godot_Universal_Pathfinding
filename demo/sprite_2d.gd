@@ -16,7 +16,9 @@ func _ready() -> void:
 	time_passed = 0.0
 	
 	test = pathfinder.Pathfinder([Vector2i(1,1), Vector2i(2,2)], [Vector2i(5,5), Vector2i(1,1), Vector2i(2,2)], false)
-	print(test)
+	print("sprite script print")
+	print(test, "\n \n")
+	
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -25,9 +27,11 @@ func _process(delta: float) -> void:
 	#rotation += PI * delta
 	position = Vector2(50,20) + Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)))
 	#set_position(new_position)
+	var test5 = pathfinder.get_Preprocessed_Map()
+	print(test5[0][0].Node_coordinates)
 	
 
 func _exit_tree() -> void:
 	test = pathfinder.Pathfinder([Vector2i(1,1), Vector2i(2,2)], [Vector2i(5,5), Vector2i(1,1), Vector2i(2,2)], true)
-	print(test)
+	print("test: ", test)
 	

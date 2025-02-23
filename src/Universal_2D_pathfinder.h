@@ -45,11 +45,7 @@ private:
 	
 	Vector2i HardEnd;								// an override of the pathfinding target location (e.g. for tower defense where you only need paths to one set point)
 	
-	Vector2i map_size = Vector2i(0,0);				// Coordinates of furthest tile from origin (0,0)
-	
-	int map_size_x;									// X axis size of map
-	
-	int map_size_y;									// Y axis size of map
+
 	
 	Dictionary costs_dictionary;					// dictionary extracted from .JSON file containing all costs for each tile variant
 	
@@ -62,18 +58,42 @@ private:
 
 
 	struct Node_Data {								// Structure to store all needed node data in one spot
-		std::pair<int, int> Node_coordinates;		// map coordinates of current node
+		Vector2i Node_coordinates;					// map coordinates of current node
 		int Node_cost;								// cost of movement onto this node
-		std::pair<int, int> Node_Neighbors[10]; 	// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
+		Array Node_Neighbors;						// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
 		// std::vector<std::pair<int, int>> Node_Neighbors;
 		double Node_Label;							// the total cost to reach this node from start point
 		int Node_state;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
+	
+		// Convert Node_Data to Variant
+		operator Variant() const {
+			Dictionary dict;
+			dict["Node_coordinates"] = Variant(Node_coordinates);
+			dict["Node_cost"] = Node_cost;
+			dict["Node_Neighbors"] = Node_Neighbors;
+			dict["Node_Label"] = Node_Label;
+			dict["Node_state"] = Node_state;
+			return dict;
+		}
+		
+		// Convert Variant to Node_Data
+		static Node_Data from_variant(const Variant& variant) {
+			Dictionary dict = variant;
+			Node_Data data;
+			data.Node_coordinates = dict["Node_coordinates"];
+			data.Node_cost =  dict["Node_cost"];
+			data.Node_Neighbors = dict["Node_Neighbors"];
+			data.Node_Label = dict["Node_Label"];
+			data.Node_state = dict["Node_state"];
+			return data;
+		}
+
 	};
 
-	std::vector<std::vector<struct Node_Data>> Preprocessed_Map;
+	Array Preprocessed_Map;
 
-	std::vector<struct Node_Data> OPEN_list;
-	std::vector<struct Node_Data> CLOSED_list;
+	Array OPEN_list;
+	Array CLOSED_list;
 
 	// Methods
 
@@ -114,16 +134,20 @@ public:
 
 	void save_handler();
 	
-	void _process(double delta) override;
+	// void _process(double delta) override;
 
-
+	Array (Universal_2D_Pathfinder::*algorithm)(Vector2i, Vector2i);
 
 	double time_passed;
 	
 	// accessible parameters
 	Vector2i Start_position;
 	void set_Start_position(const Vector2i new_start);
-	Vector2i get_Start_position();
+	Vector2i get_Start_position() const;
+
+	Vector2i map_size = Vector2i(0,0);				// Coordinates of furthest tile from origin (0,0)
+	void set_map_size(const Vector2i new_mapsize);
+	Vector2i get_map_size() const;
 	
 	enum Heuristic {
 		EUCLID ,// h = sqrt(x^2 + y^2)
@@ -147,7 +171,7 @@ public:
 		// Main methods
 
 			// Pathifinder
-			Array Pathfinder(Array Start_points_array, Array End_points_array, const bool& debug = false);
+			Array Pathfinder(Array Start_points_array, Array End_points_array, const bool debug = false);
 
 
 			
@@ -155,8 +179,14 @@ public:
 			// Preprocessor
 			Array Preprocessor();
 
-/*
+
 		// Setters / Getters
+
+			// Preprocessed_Map
+			void set_Preprocessed_Map();
+			Array get_Preprocessed_Map() const;
+
+
 			// MAX_PATH_LENGTH
 			void set_MAX_PATH_LENGTH(const int new_max_length);
 			int get_MAX_PATH_LENGTH() const;
@@ -183,7 +213,7 @@ public:
 			// pathfinder
 			void set_Pathfinder(const int new_pathfinder);
 			int get_Pathfinder() const;
-		*/
+		
 };
 
 }
