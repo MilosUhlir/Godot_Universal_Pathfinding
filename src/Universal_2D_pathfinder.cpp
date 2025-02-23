@@ -39,6 +39,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     if (Engine::get_singleton()->is_editor_hint()) {
         UtilityFunctions::print("Clean up message");
         // run preprocessor on scene close in editor
+        Preprocessor();
     }
 }
 
@@ -112,10 +113,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         return Paths;
     }
 
-/*
+
     // Algorithms
         // A*
-        std::vector<Vector2i> Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
+        Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
 
             // put first node into OPEN, CLOSED is empty
             int start_x = start_node.x;
@@ -135,7 +136,8 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             
             }
 
-            std::vector<Vector2i> placeholder = {Vector2i(0,0)};
+            Array placeholder;
+            placeholder.append(Vector2i(0,0));
             return placeholder;
         }
 
@@ -148,30 +150,35 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
         // other...
 
-*/
+
 
     // preprocessor
     Array Universal_2D_Pathfinder::Preprocessor() {
         // Vector2i map_size = Vector2i(0,0), TileMapLayer Map
-        Vector2i start_coords(0,0);
-        int map_size_x = map_size[0];
-        int map_size_y = map_size[1];
-        for (int x = 0; x <= map_size_x; x++) {
-            for (int y = 0; y <= map_size_y; y++) {
-                Vector2i node_atlas_coords = Map.get_cell_atlas_coords(Vector2i(x,y));
-                Preprocessed_Map[x][y].Node_coordinates = {x, y};
-                Preprocessed_Map[x][y].Node_cost;
-                Preprocessed_Map[x][y].Node_Label = 0;
-                Preprocessed_Map[x][y].Node_Neighbors;
-            }
+        if (map_size == Vector2i(0,0)) {
+            return Array{};
         }
+        else {
+            Vector2i start_coords(0,0);
+            int map_size_x = map_size[0];
+            int map_size_y = map_size[1];
+            for (int x = 0; x <= map_size_x; x++) {
+                for (int y = 0; y <= map_size_y; y++) {
+                    Vector2i node_atlas_coords = get_cell_atlas_coords(Vector2i(x,y));
+                    Preprocessed_Map[x][y].Node_coordinates = {x, y};
+                    Preprocessed_Map[x][y].Node_cost;
+                    Preprocessed_Map[x][y].Node_Label = 0;
+                    Preprocessed_Map[x][y].Node_Neighbors;
+                }
+            }
 
 
-        Array placeholder = {};
-        return placeholder;
+            Array placeholder = {};
+            return placeholder;
+        }
     }
 
-/*
+
 
     // Helper methods
         // label calculation
@@ -179,10 +186,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         // neighbor search
 
         // find minimal label
-        Universal_2D_Pathfinder::Node_Data Universal_2D_Pathfinder::find_minimum_label(std::vector<Universal_2D_Pathfinder::Node_Data> open_list, std::pair<int, int> end_node) {
+        Universal_2D_Pathfinder::Node_Data Universal_2D_Pathfinder::find_minimum_label(Array& open_list, Vector2i end_node) {
             
             // find first node with minimal f(i)
-            auto min_fi_node = std::min_element(OPEN_list.begin(), OPEN_list.end(),
+            auto min_fi_node = std::min_element(open_list.begin(), open_list.end(),
                 [](const Node_Data& a, const Node_Data& b) {
                     return a.Node_Label < b.Node_Label;
                 });
@@ -213,7 +220,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         };
 
 
-*/
+
 
 
 // getters and setters

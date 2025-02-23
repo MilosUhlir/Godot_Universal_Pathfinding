@@ -23,13 +23,7 @@ private:
 	// accessible variables
 	
 
-	enum Algorithm_Type {							// enum for selection of Pathfinding algorithm
-		AStar,										// Standard A* algorithm (mainly for realtime pathfinding)
-		// Astar_Exponential,						// exponential heuristic with f = g + h*e^h	//potentially (fills Double numeric cappacity 1.7*10^308 with h>200)	have in-script logic to use this on small distances?
-		Dynamic_Programing,							// DP only for many starts to one target
-		Dijkstra									// standard Dijkstra algorithm (good for one start to many ends and preprocessing paths for later use)
-	};
-	Algorithm_Type Algorithm;
+	
 
 	// enum WaypointOrder {							// enum for selecting the order of use for waypoints
 	// 	No_Waypoints,
@@ -43,7 +37,7 @@ private:
 	
 	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
 	
-	TileMapLayer Map;								// TileMapLayer object to read Map Data like tileset type and tile atlas
+	// TileMapLayer Map;								// TileMapLayer object to read Map Data like tileset type and tile atlas
 	
 	std::vector<Vector2i> Waypoints;				// an array of user defined waypoints which will be used to generate the path
 	
@@ -85,23 +79,25 @@ private:
 
 	// Algorithms
 		// A*
-		std::vector<Vector2i> AStar_Pathfinder(Vector2i start_node, Vector2i end_node);
-		
+		Array AStar_Pathfinder(Vector2i start_node, Vector2i end_node);
+
 		// Dynamic Programming
-		std::vector<Vector2i> DP_Pathfinder(Vector2i start_node, Vector2i end_node);
+		Array DP_Pathfinder(Vector2i start_node, Vector2i end_node);
 		
 		// Dijkstra
-
+		Array Disjkstra_Pathfinder(Vector2i start_node, Vector2i end_node);
 		
 		// other...
 
 	// Helper methods
 		// label calculation
-		// double Label_Calculator(struct Node_parent, struct Node);
+		double Label_Calculator(struct Node_data node_parent, struct Node_data node);
+		
 		// neighbor search
 
+
 		// find minimal label
-		// Node_Data find_minimum_label(std::vector<Node_Data> open_list, std::pair<int, int> end_node);
+		Node_Data find_minimum_label(Array& open_list, Vector2i end_node);
 
 
 
@@ -129,6 +125,23 @@ public:
 	void set_Start_position(const Vector2i new_start);
 	Vector2i get_Start_position();
 	
+	enum Heuristic {
+		EUCLID ,// h = sqrt(x^2 + y^2)
+		EUCLID_POW ,// h^weight
+		EUCLID_WGHT ,// h*weight
+		EUCLID_EXP ,//= exp(h)
+		MANHATAN // h = x + y
+	};
+	Heuristic Heuristic;
+
+	enum Algorithm_Type {							// enum for selection of Pathfinding algorithm
+		AStar,										// Standard A* algorithm (mainly for realtime pathfinding)
+		// Astar_Exponential,						// exponential heuristic with f = g + h*e^h	//potentially (fills Double numeric cappacity 1.7*10^308 with h>200)	have in-script logic to use this on small distances?
+		Dynamic_Programing,							// DP only for many starts to one target
+		Dijkstra									// standard Dijkstra algorithm (good for one start to many ends and preprocessing paths for later use)
+	};
+	Algorithm_Type Algorithm;
+
 	// Methods
 	
 		// Main methods
