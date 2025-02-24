@@ -57,38 +57,20 @@ private:
 	Vector2i hex_search_array[6];					// search array for hexagonal tile grid
 
 
-	struct Node_Data {								// Structure to store all needed node data in one spot
-		Vector2i Node_coordinates;					// map coordinates of current node
-		int Node_cost;								// cost of movement onto this node
-		Array Node_Neighbors;						// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
-		// std::vector<std::pair<int, int>> Node_Neighbors;
-		double Node_Label;							// the total cost to reach this node from start point
-		int Node_state;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
-	
-		// Convert Node_Data to Variant
-		operator Variant() const {
-			Dictionary dict;
-			dict["Node_coordinates"] = Variant(Node_coordinates);
-			dict["Node_cost"] = Node_cost;
-			dict["Node_Neighbors"] = Node_Neighbors;
-			dict["Node_Label"] = Node_Label;
-			dict["Node_state"] = Node_state;
-			return dict;
-		}
+	Dictionary Node_Data = {
 		
-		// Convert Variant to Node_Data
-		static Node_Data from_variant(const Variant& variant) {
-			Dictionary dict = variant;
-			Node_Data data;
-			data.Node_coordinates = dict["Node_coordinates"];
-			data.Node_cost =  dict["Node_cost"];
-			data.Node_Neighbors = dict["Node_Neighbors"];
-			data.Node_Label = dict["Node_Label"];
-			data.Node_state = dict["Node_state"];
-			return data;
-		}
+	}; 
+	// {							// Structure to store all needed node data in one spot
+	// 	{"Node_coordinates", Vector2i()};				// map coordinates of current node
+	// 	{"Node_parent", Vector2i()};
+	// 	{"Node_Neighbors", Array{}};					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
+	// 	{"Node_cost", 0};								// cost of movement onto this node
+	// 	{"Node_state", 0};								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
+	// 	{"Node_Label", 0.0};							// the total cost to reach this node from start point
+	// };
 
-	};
+
+	
 
 	Array Preprocessed_Map;
 
@@ -111,13 +93,13 @@ private:
 
 	// Helper methods
 		// label calculation
-		double Label_Calculator(struct Node_data node_parent, struct Node_data node);
+		double Label_Calculator(Dictionary node_parent, Dictionary node);
 		
 		// neighbor search
 
 
 		// find minimal label
-		Node_Data find_minimum_label(Array& open_list, Vector2i end_node);
+		Dictionary find_minimum_label(Array& open_list, Vector2i end_node);
 
 
 

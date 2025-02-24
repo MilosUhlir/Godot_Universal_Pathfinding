@@ -27,8 +27,8 @@ func _process(delta: float) -> void:
 	#rotation += PI * delta
 	position = Vector2(50,20) + Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)))
 	#set_position(new_position)
-	var test5 = pathfinder.get_Preprocessed_Map()
-	print(test5[0][0].Node_coordinates)
+	#var test5 = pathfinder.get_Preprocessed_Map()
+	#print(test5[0][0].Node_neighbors)
 	
 
 func _exit_tree() -> void:

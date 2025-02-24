@@ -40,18 +40,28 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
 
     map_size = Vector2i(2,2);
 
-    Node_Data default_node;
-    default_node.Node_coordinates = Vector2i(0,0);
-    default_node.Node_cost = 0;
-    default_node.Node_Label = 0;
-    default_node.Node_Neighbors = {};
-    default_node.Node_state = 0;
-    Array default_array;
-    default_array.append(default_node.operator godot::Variant());
-    default_array.append(default_node.operator godot::Variant());
-    Preprocessed_Map.append(default_array);
-    Preprocessed_Map.append(default_array);
+    // Node_Data = Dictionary  {
+    //     {"Node_coordinates", Vector2i()},				// map coordinates of current node
+	// 	{"Node_parent", Vector2i()},
+	// 	{"Node_Neighbors", Array{}},					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
+	// 	{"Node_cost", 0},								// cost of movement onto this node
+	// 	{"Node_state", 0},								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
+	// 	{"Node_Label", 0.0} 							// the total cost to reach this node from start point
+	// };
+    Node_Data["Node_coordinates"] = Vector2i(0,0);
+    Node_Data["Node_parent"] = Vector2i(0,0);
+    Node_Data["Node_neighbors"] = Array{};
+    Node_Data["Node_cost"] = 0;
+    Node_Data["Node_state"] = 0;
+    Node_Data["Node_label"] = 0.0;
 
+    Dictionary default_node = Node_Data;
+    Array default_array;
+    default_array.push_back(default_node);
+    default_array.push_back(default_node);
+    Preprocessed_Map.push_back(default_array);
+    Preprocessed_Map.push_back(default_array);
+    
 }
 
 
@@ -60,11 +70,11 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     if (Engine::get_singleton()->is_editor_hint()) {
 
         Array test = Preprocessed_Map[0];
-        Array test1 = test[0];
+        Dictionary test1 = test[0];
         test1;
 
-        UtilityFunctions::print("test: \n", test);
-        UtilityFunctions::print("test1: \n", test1);
+        // UtilityFunctions::print("test: \n", test);
+        // UtilityFunctions::print("test1: \n", test1);
 
         UtilityFunctions::print("Clean up message");
         // run preprocessor on scene close in editor
@@ -159,17 +169,16 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         // A*
         Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
 
-            Variant test = Preprocessed_Map[0];
-            UtilityFunctions::print("test: \n", test);
+            Array test = Preprocessed_Map[0];
+            // UtilityFunctions::print("test: \n", test);
 
             // put first node into OPEN, CLOSED is empty
             int start_x = start_node.x;
             int start_y = start_node.y;
             Array temp;
-            Object test_pre = Preprocessed_Map[0][0];
 
             temp = Preprocessed_Map[start_x];
-            OPEN_list.append(Node_Data::from_variant(temp[start_y]));
+            OPEN_list.append(temp[start_y]);
 
             Astar_while:
             while (!OPEN_list.is_empty()) {
@@ -213,14 +222,18 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             int map_size_y = map_size.y-1;
             for (int x = 0; x <= map_size_x; x++) {
                 UtilityFunctions::print("x: ", x);
+                Array map_x = Preprocessed_Map[x];
                 for (int y = 0; y <= map_size_y; y++) {
                     UtilityFunctions::print("y: ", y);
                     Vector2i node_atlas_coords = get_cell_atlas_coords(Vector2i(x,y));
                     UtilityFunctions::print(node_atlas_coords);
-                    // Preprocessed_Map[x][y].Node_coordinates = {x, y};
-                    // Preprocessed_Map[x][y].Node_cost;
-                    // Preprocessed_Map[x][y].Node_Label = 0;
-                    // Preprocessed_Map[x][y].Node_Neighbors;
+                    Dictionary map_node = map_x[y];
+                    map_node["Node_coordinates"] = Vector2i(x,y);
+                    map_node["Node_parent"] = Vector2i(x,y);
+                    map_node["Node_neighbors"] = Array{};
+                    map_node["Node_cost"] = 0;
+                    map_node["Node_state"] = 0;
+                    map_node["Node_label"] = 0.0;
                 }
             }
 
@@ -239,11 +252,11 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // Helper methods
         // label calculation
-        double Label_Calculator(struct Node_Data Node_Parent, struct Node_Data Node);
+        double Label_Calculator(Dictionary Node_Parent, Dictionary Node);
         // neighbor search
 
         // find minimal label
-        Universal_2D_Pathfinder::Node_Data Universal_2D_Pathfinder::find_minimum_label(Array& open_list, Vector2i end_node) {
+        Dictionary Universal_2D_Pathfinder::find_minimum_label(Array& open_list, Vector2i end_node) {
 
 
 
@@ -282,7 +295,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             }
             */
 
-            Node_Data placeholder;
+            Dictionary placeholder;
 
             return placeholder;
         };

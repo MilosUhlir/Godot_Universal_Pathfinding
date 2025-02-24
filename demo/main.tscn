@@ -9,7 +9,7 @@ tile_size = Vector2i(128, 128)
 [node name="main" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(65.0981, 33.7479)
+position = Vector2(68.1768, 30.6732)
 texture = ExtResource("1_lb8cn")
 centered = false
 script = ExtResource("2_jfbyi")
