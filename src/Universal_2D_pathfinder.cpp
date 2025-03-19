@@ -25,43 +25,17 @@ void Universal_2D_Pathfinder::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_map_size"), &Universal_2D_Pathfinder::get_map_size);
     ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "map_size"), "set_map_size", "get_map_size");
 
-    ClassDB::bind_method(D_METHOD("set_Preprocessed_Map"), &Universal_2D_Pathfinder::set_Preprocessed_Map);
-    ClassDB::bind_method(D_METHOD("get_Preprocessed_Map"), &Universal_2D_Pathfinder::get_Preprocessed_Map);
-    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "Preprocessed_Map"),"set_Preprocessed_Map","get_Preprocessed_Map");
+    // ClassDB::bind_method(D_METHOD("set_Preprocessed_Map"), &Universal_2D_Pathfinder::set_Preprocessed_Map);
+    // ClassDB::bind_method(D_METHOD("get_Preprocessed_Map"), &Universal_2D_Pathfinder::get_Preprocessed_Map);
+    // ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "Preprocessed_Map"),"set_Preprocessed_Map","get_Preprocessed_Map");
 
 }
 
 Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
-    // initialization of variables
-    // Path;
-    // MAX_PATH_LENGTH = 100000;
-    // PathDiversion
-    // Map_tileset = Map.get_tile_set().operator->();
 
     map_size = Vector2i(2,2);
+    Preprocessed_Map;
 
-    // Node_Data = Dictionary  {
-    //     {"Node_coordinates", Vector2i()},				// map coordinates of current node
-	// 	{"Node_parent", Vector2i()},
-	// 	{"Node_Neighbors", Array{}},					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
-	// 	{"Node_cost", 0},								// cost of movement onto this node
-	// 	{"Node_state", 0},								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
-	// 	{"Node_Label", 0.0} 							// the total cost to reach this node from start point
-	// };
-    Node_Data["Node_coordinates"] = Vector2i(0,0);
-    Node_Data["Node_parent"] = Vector2i(0,0);
-    Node_Data["Node_neighbors"] = Array{};
-    Node_Data["Node_cost"] = 0;
-    Node_Data["Node_state"] = 0;
-    Node_Data["Node_label"] = 0.0;
-
-    Dictionary default_node = Node_Data;
-    Array default_array;
-    default_array.push_back(default_node);
-    default_array.push_back(default_node);
-    Preprocessed_Map.push_back(default_array);
-    Preprocessed_Map.push_back(default_array);
-    
 }
 
 
@@ -69,15 +43,8 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // cleanup
     if (Engine::get_singleton()->is_editor_hint()) {
 
-        Array test = Preprocessed_Map[0];
-        Dictionary test1 = test[0];
-        test1;
-
-        // UtilityFunctions::print("test: \n", test);
-        // UtilityFunctions::print("test1: \n", test1);
-
         UtilityFunctions::print("Clean up message");
-        // run preprocessor on scene close in editor
+        // // run preprocessor on scene close in editor
         Preprocessor();
     }
 }
@@ -168,17 +135,14 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // Algorithms
         // A*
         Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
-
-            Array test = Preprocessed_Map[0];
-            // UtilityFunctions::print("test: \n", test);
-
+            
             // put first node into OPEN, CLOSED is empty
             int start_x = start_node.x;
             int start_y = start_node.y;
-            Array temp;
+            // Vector<Node_Data> temp;
 
-            temp = Preprocessed_Map[start_x];
-            OPEN_list.append(temp[start_y]);
+            // temp = Preprocessed_Map[start_x];
+            // OPEN_list.append(temp[start_y]);
 
             Astar_while:
             while (!OPEN_list.is_empty()) {
@@ -211,40 +175,36 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
 
     // preprocessor
-    Array Universal_2D_Pathfinder::Preprocessor() {
+    void Universal_2D_Pathfinder::Preprocessor() {
         // Vector2i map_size = Vector2i(0,0), TileMapLayer Map
         if (map_size == Vector2i(0,0)) {
-            UtilityFunctions::print("Preprocessor finished");
-            return Array{};
+            // UtilityFunctions::print("Preprocessor finished");
+            // return Preprocessed_Map;
+            return;
         }
         else {
-            int map_size_x = map_size.x-1;
-            int map_size_y = map_size.y-1;
-            for (int x = 0; x <= map_size_x; x++) {
+        //     int map_size_x = map_size.x;
+        //     int map_size_y = map_size.y;
+            for (int32_t x = 0; x < map_size.x; x++) {
                 UtilityFunctions::print("x: ", x);
-                Array map_x = Preprocessed_Map[x];
-                for (int y = 0; y <= map_size_y; y++) {
+                // Vector<Node_Data> map_x = Preprocessed_Map[x];
+                for (int32_t y = 0; y < map_size.y; y++) {
                     UtilityFunctions::print("y: ", y);
                     Vector2i node_atlas_coords = get_cell_atlas_coords(Vector2i(x,y));
                     UtilityFunctions::print(node_atlas_coords);
-                    Dictionary map_node = map_x[y];
-                    map_node["Node_coordinates"] = Vector2i(x,y);
-                    map_node["Node_parent"] = Vector2i(x,y);
-                    map_node["Node_neighbors"] = Array{};
-                    map_node["Node_cost"] = 0;
-                    map_node["Node_state"] = 0;
-                    map_node["Node_label"] = 0.0;
+                    // Node_Data map_node = map_x[y];
+                    // Node_Data &_Node_coordinates = Preprocessed_Map[x][y];
+                    Preprocessed_Map[x][y].Node_parent = Vector2i(.x = x, .y = y);
+                    // Preprocessed_Map.get(x).get(y).Node_neighbors = Array{};
+                    // Preprocessed_Map.get(x).get(y).Node_cost = 0;
+                    // Preprocessed_Map.get(x).get(y).Node_state = 0;
+                    // Preprocessed_Map.get(x).get(y).Node_label = 0.0;
                 }
             }
 
-
-            // JSON json_parser;
-            // String map_parsed = json_parser.stringify(Preprocessed_Map);
-            // UtilityFunctions::print(map_parsed);
-
-
-            UtilityFunctions::print("Preprocessor finished");
-            return Array{};
+            // UtilityFunctions::print("Preprocessor finished");
+            // return Preprocessed_Map;
+            return;
         }
     }
 
@@ -307,10 +267,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 // getters and setters
 
     // preprocessed map
-    void Universal_2D_Pathfinder::set_Preprocessed_Map() {};
-    Array Universal_2D_Pathfinder::get_Preprocessed_Map() const {
-        return Preprocessed_Map;
-    }
+    // void Universal_2D_Pathfinder::set_Preprocessed_Map() {};
+    // Vector<Vector<Universal_2D_Pathfinder::Node_Data>> Universal_2D_Pathfinder::get_Preprocessed_Map()  const{
+    //     return Preprocessed_Map;
+    // }
 
     // Start_position
     void Universal_2D_Pathfinder::set_Start_position(const Vector2i new_start) {

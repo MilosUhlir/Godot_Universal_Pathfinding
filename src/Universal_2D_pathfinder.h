@@ -4,11 +4,12 @@
 // Godot includes
 #include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/classes/tile_map_layer.hpp>
+#include <godot_cpp/templates/list.hpp>
 
 
 // my includes
-#include <vector>
-#include <map>
+// #include <vector>
+// #include <map>
 
 
 namespace godot {
@@ -37,9 +38,9 @@ private:
 	
 	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
 	
-	// TileMapLayer Map;								// TileMapLayer object to read Map Data like tileset type and tile atlas
+	// TileMapLayer Map;							// TileMapLayer object to read Map Data like tileset type and tile atlas
 	
-	std::vector<Vector2i> Waypoints;				// an array of user defined waypoints which will be used to generate the path
+	Array Waypoints;								// an array of user defined waypoints which will be used to generate the path
 	
 	bool UseWaypoints;								// whether to use waypoints or not
 	
@@ -56,23 +57,8 @@ private:
 	Vector2i square_search_array[8];				// search array for square(and isometrtic) tile grids
 	Vector2i hex_search_array[6];					// search array for hexagonal tile grid
 
-
-	Dictionary Node_Data = {
-		
-	}; 
-	// {							// Structure to store all needed node data in one spot
-	// 	{"Node_coordinates", Vector2i()};				// map coordinates of current node
-	// 	{"Node_parent", Vector2i()};
-	// 	{"Node_Neighbors", Array{}};					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
-	// 	{"Node_cost", 0};								// cost of movement onto this node
-	// 	{"Node_state", 0};								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
-	// 	{"Node_Label", 0.0};							// the total cost to reach this node from start point
-	// };
-
-
 	
-
-	Array Preprocessed_Map;
+	
 
 	Array OPEN_list;
 	Array CLOSED_list;
@@ -107,8 +93,11 @@ protected:
 	static void _bind_methods();
 
 	// accessible parameters
+	
 
 public:
+
+
 
 	// Constructor / Destructor
 	Universal_2D_Pathfinder();
@@ -116,6 +105,19 @@ public:
 
 	void save_handler();
 	
+	struct Node_Data {
+		Vector2i Node_coordinates;	// map coordinates of current node
+		Vector2i Node_parent;
+		Array Node_neighbors;		// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
+		int Node_cost;				// cost of movement onto this node
+		int Node_state;				// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
+		float Node_label;			// the total cost to reach this node from start point
+	};
+
+	Vector<Vector<Node_Data>> Preprocessed_Map;
+
+
+
 	// void _process(double delta) override;
 
 	Array (Universal_2D_Pathfinder::*algorithm)(Vector2i, Vector2i);
@@ -159,14 +161,14 @@ public:
 			
 
 			// Preprocessor
-			Array Preprocessor();
+			void Preprocessor();
 
 
 		// Setters / Getters
 
 			// Preprocessed_Map
 			void set_Preprocessed_Map();
-			Array get_Preprocessed_Map() const;
+			Vector<Vector<Node_Data>> get_Preprocessed_Map() const;
 
 
 			// MAX_PATH_LENGTH
