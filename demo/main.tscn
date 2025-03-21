@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://0fjxsh3qmfai"]
+[gd_scene load_steps=3 format=3 uid="uid://bdn0kqm3bc3o4"]
 
-[ext_resource type="TileSet" uid="uid://3imxivhgrg8b" path="res://tile_sets/hex_tile_set.tres" id="1_vatmq"]
+[ext_resource type="Script" path="res://universal_2d_pathfinder.gd" id="1_7xxce"]
+[ext_resource type="TileSet" uid="uid://pbfdtbcyofuj" path="res://tile_sets/square_tile_set.tres" id="1_u77xt"]
 
 [node name="main" type="Node2D"]
 
 [node name="Universal_2D_Pathfinder" type="Universal_2D_Pathfinder" parent="."]
-tile_set = ExtResource("1_vatmq")
+tile_set = ExtResource("1_u77xt")
+script = ExtResource("1_7xxce")

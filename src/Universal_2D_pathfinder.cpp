@@ -27,15 +27,72 @@ void Universal_2D_Pathfinder::_bind_methods() {
 
     // ClassDB::bind_method(D_METHOD("set_Preprocessed_Map"), &Universal_2D_Pathfinder::set_Preprocessed_Map);
     // ClassDB::bind_method(D_METHOD("get_Preprocessed_Map"), &Universal_2D_Pathfinder::get_Preprocessed_Map);
-    // ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "Preprocessed_Map"),"set_Preprocessed_Map","get_Preprocessed_Map");
+    // ADD_PROPERTY(PropertyInfo(Variant::varian, "Preprocessed_Map"), "set_Preprocessed_Map", "get_Preprocessed_Map");
 
+    
+    
 }
 
 Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
 
-    map_size = Vector2i(2,2);
-    Preprocessed_Map;
+    map_size = Vector2i(1,1);
 
+    Vector<Node_Data> init;
+    Node_Data test;
+    test.Node_coordinates = Vector2i(0,0);
+    test.Node_cost = 0;
+    test.Node_label = 0.0;
+    test.Node_neighbors.append(Vector2i(0,0));
+    test.Node_parent = Vector2i(0,0);
+    test.Node_state = 0;
+
+    init.append(test);
+    Preprocessed_Map.append(init);
+
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_coordinates);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_cost);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_label);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_neighbors);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_parent);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_state);
+    
+
+    Preprocessed_Map.write[0].write[0].Node_coordinates = Vector2i(2,5);
+    Preprocessed_Map.write[0].write[0].Node_cost = 15;
+    Preprocessed_Map.write[0].write[0].Node_label = 6.5;
+    Preprocessed_Map.write[0].write[0].Node_neighbors.append(Vector2i(0,0));
+    Preprocessed_Map.write[0].write[0].Node_parent = Vector2i(2,2);
+    Preprocessed_Map.write[0].write[0].Node_state = 5;
+
+
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_coordinates);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_cost);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_label);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_neighbors);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_parent);
+    UtilityFunctions::print(Preprocessed_Map[0][0].Node_state);
+
+    UtilityFunctions::print("test_array:");
+    UtilityFunctions::print(test_array);
+    UtilityFunctions::print(test_array[0][0].Node_coordinates);
+    UtilityFunctions::print(test_array[0][0].Node_cost);
+    UtilityFunctions::print(test_array[0][0].Node_label);
+    UtilityFunctions::print(test_array[0][0].Node_neighbors);
+    UtilityFunctions::print(test_array[0][0].Node_parent);
+    UtilityFunctions::print(test_array[0][0].Node_state);
+
+    data_saver = memnew(ConfigFile());
+    data_saver->set_value("section1", "map_1", test_array);
+    // bool err = data_saver->save("user://my_config.cfg");
+    data_saver->save("res://test_array.cfg");
+    ERR_FAIL_COND(data_saver->save("res://test_array.cfg") != godot::Error::OK);
+
+    // ERR_FAIL_COND(file_access.open("res://test_array.bin", FileAccess::WRITE) != OK, false);
+    // file_access.store_var(test_array);
+    // file_access.close();
+
+
+    // json_parser.init_ref();
 }
 
 
@@ -45,8 +102,11 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
         UtilityFunctions::print("Clean up message");
         // // run preprocessor on scene close in editor
+        
         Preprocessor();
     }
+
+    // json_parser.unreference();
 }
 
 
@@ -193,12 +253,13 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     Vector2i node_atlas_coords = get_cell_atlas_coords(Vector2i(x,y));
                     UtilityFunctions::print(node_atlas_coords);
                     // Node_Data map_node = map_x[y];
-                    // Node_Data &_Node_coordinates = Preprocessed_Map[x][y];
-                    Preprocessed_Map[x][y].Node_parent = Vector2i(.x = x, .y = y);
-                    // Preprocessed_Map.get(x).get(y).Node_neighbors = Array{};
-                    // Preprocessed_Map.get(x).get(y).Node_cost = 0;
-                    // Preprocessed_Map.get(x).get(y).Node_state = 0;
-                    // Preprocessed_Map.get(x).get(y).Node_label = 0.0;
+                    // Preprocessed_Map.write[x].write[y].Node_coordinates = Vector2i(x,y);
+                    // Preprocessed_Map.write[x].write[y].Node_parent;
+                    // Preprocessed_Map.write[x].write[y].Node_neighbors = Array{};
+                    // Preprocessed_Map.write[x].write[y].Node_cost = 0;
+                    // Preprocessed_Map.write[x].write[y].Node_state = 0;
+                    // Preprocessed_Map.write[x].write[y].Node_label = 0.0;
+                    
                 }
             }
 
@@ -267,10 +328,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 // getters and setters
 
     // preprocessed map
-    // void Universal_2D_Pathfinder::set_Preprocessed_Map() {};
-    // Vector<Vector<Universal_2D_Pathfinder::Node_Data>> Universal_2D_Pathfinder::get_Preprocessed_Map()  const{
-    //     return Preprocessed_Map;
-    // }
+    void Universal_2D_Pathfinder::set_Preprocessed_Map() {};
+    Vector<Vector<Universal_2D_Pathfinder::Node_Data>> Universal_2D_Pathfinder::get_Preprocessed_Map()  const{
+        return Preprocessed_Map;
+    }
 
     // Start_position
     void Universal_2D_Pathfinder::set_Start_position(const Vector2i new_start) {

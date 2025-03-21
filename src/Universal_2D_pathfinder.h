@@ -5,6 +5,9 @@
 #include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/classes/tile_map_layer.hpp>
 #include <godot_cpp/templates/list.hpp>
+#include <godot_cpp/classes/json.hpp>
+#include <godot_cpp/classes/config_file.hpp>
+#include <godot_cpp/classes/file_access.hpp>
 
 
 // my includes
@@ -87,7 +90,10 @@ private:
 		// find minimal label
 		Dictionary find_minimum_label(Array& open_list, Vector2i end_node);
 
+	// JSON json_parser;
 
+	ConfigFile* data_saver;
+	// FileAccess file_access;
 
 protected:
 	static void _bind_methods();
@@ -104,17 +110,18 @@ public:
 	~Universal_2D_Pathfinder();
 
 	void save_handler();
-	
+	 
 	struct Node_Data {
-		Vector2i Node_coordinates;	// map coordinates of current node
-		Vector2i Node_parent;
-		Array Node_neighbors;		// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
-		int Node_cost;				// cost of movement onto this node
-		int Node_state;				// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
-		float Node_label;			// the total cost to reach this node from start point
+		Vector2i Node_coordinates = Vector2i(0,0);		// map coordinates of current node
+		Vector2i Node_parent = Vector2i(0,0);
+		Array Node_neighbors = Array{};					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
+		int Node_cost = 0;								// cost of movement onto this node
+		int Node_state = 0;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
+		float Node_label = 0.0;							// the total cost to reach this node from start point
 	};
 
 	Vector<Vector<Node_Data>> Preprocessed_Map;
+	Node_Data test_array[2][2];
 
 
 
