@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Universal_2D_Pathfinder" inherits="TileMapLayer" experimental="This Class is under development. Bugs may ocur!" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="Pathfinder">
+			<return type="Array" />
+			<param index="0" name="Start_points_array" type="Array" />
+			<param index="1" name="End_points_array" type="Array" />
+			<param index="2" name="debug" type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="Algorithm" type="int" setter="set_Algorithm" getter="get_Algorithm" enum="Universal_2D_Pathfinder.Algorithm_Type" default="0">
+		</member>
+		<member name="Heuristic" type="int" setter="set_Heuristic" getter="get_Heuristic" enum="Universal_2D_Pathfinder.Heuristic_Type" default="0">
+		</member>
+		<member name="Start_position" type="Vector2i" setter="set_Start_position" getter="get_Start_position" default="Vector2i(0, 0)">
+		</member>
+		<member name="map_size" type="Vector2i" setter="set_map_size" getter="get_map_size" default="Vector2i(2, 2)">
+		</member>
+	</members>
+	<constants>
+		<constant name="ASTAR" value="0" enum="Algorithm_Type">
+		</constant>
+		<constant name="DIJKSTRA" value="1" enum="Algorithm_Type">
+		</constant>
+		<constant name="EUCLID" value="0" enum="Heuristic_Type">
+			Euclidean distance.
+			[code](h = sqrt(x^2 + y^2))[/code]
+		</constant>
+		<constant name="EUCLID_POW" value="1" enum="Heuristic_Type">
+			Euclidean distance exponentiated to power of weight .
+			[code]h = sqrt(x^2 + y^2) ^ weight[/code]
+		</constant>
+		<constant name="EUCLID_WGHT" value="2" enum="Heuristic_Type">
+			Euclidean distance multiplied by weight
+			[code]h = sqrt(x^2 + y^2) * weight[/code]
+		</constant>
+		<constant name="EUCLID_EXP" value="3" enum="Heuristic_Type">
+			Euclidean distance multiplied by an exponential member
+			[code]h = sqrt(x^2 + y^2) * e^sqrt(x^2 + y^2)[/code]
+		</constant>
+		<constant name="MANHATAN" value="4" enum="Heuristic_Type">
+			Manhatan distance is orthogonal distance folowing x and y axes
+			[code]h = x + y[/code]
+		</constant>
+	</constants>
+</class>

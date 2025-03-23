@@ -1,10 +1,76 @@
-[gd_scene load_steps=3 format=3 uid="uid://bdn0kqm3bc3o4"]
+[gd_scene load_steps=3 format=4 uid="uid://bdn0kqm3bc3o4"]
 
 [ext_resource type="Script" path="res://universal_2d_pathfinder.gd" id="1_7xxce"]
-[ext_resource type="TileSet" uid="uid://pbfdtbcyofuj" path="res://tile_sets/square_tile_set.tres" id="1_u77xt"]
+[ext_resource type="TileSet" uid="uid://pbfdtbcyofuj" path="res://tile_sets/square_tile_set.tres" id="1_krkvr"]
 
 [node name="main" type="Node2D"]
 
 [node name="Universal_2D_Pathfinder" type="Universal_2D_Pathfinder" parent="."]
-tile_set = ExtResource("1_u77xt")
+map_size = Vector2i(3, 3)
+"storage array" = [[{
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}], [{
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}], [{
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}]]
+tile_map_data = PackedByteArray("AAAAAAEAAQAAAAAAAAABAAAAAQAAAAAAAAABAAEAAgAAAAAAAAACAAAAAgAAAAAAAAAAAAIAAgAAAAAAAAACAAIAAQAAAAAAAAACAAEAAAAAAAAAAAABAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
+tile_set = ExtResource("1_krkvr")
 script = ExtResource("1_7xxce")

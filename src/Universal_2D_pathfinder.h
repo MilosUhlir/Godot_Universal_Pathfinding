@@ -22,12 +22,18 @@ class Universal_2D_Pathfinder : public TileMapLayer {
 
 private:
 
-	/**/
 
-	// accessible variables
+protected:
+	static void _bind_methods();
 	
 
-	
+public:
+	// Constructor / Destructor
+	Universal_2D_Pathfinder();
+	~Universal_2D_Pathfinder();
+
+
+	// Variables
 
 	// enum WaypointOrder {							// enum for selecting the order of use for waypoints
 	// 	No_Waypoints,
@@ -40,77 +46,28 @@ private:
 	int MAX_PATH_LENGTH;							// maximum possible length of path before pathfinder termination
 	
 	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
-	
-	// TileMapLayer Map;							// TileMapLayer object to read Map Data like tileset type and tile atlas
-	
+
 	Array Waypoints;								// an array of user defined waypoints which will be used to generate the path
 	
 	bool UseWaypoints;								// whether to use waypoints or not
 	
 	Vector2i HardEnd;								// an override of the pathfinding target location (e.g. for tower defense where you only need paths to one set point)
 	
-
+	Dictionary costs_dictionary;					// dictionary extracted from .cfg file containing all costs for each tile variant
 	
-	Dictionary costs_dictionary;					// dictionary extracted from .JSON file containing all costs for each tile variant
-	
-	// internal variables
-	std::vector<std::pair<int, int>> Path;			// array (vector) of tile coordinates
-	std::vector<std::pair<int, int>> SearchVector;	// array of neighbor tiles
+	Array Path;										// array of tile coordinates
+	Array Paths;									// array of all calculated paths
+	Array SearchVector;								// array of neighbor tiles
 	TileSet* Map_tileset;							// TileSet object
-	Vector2i square_search_array[8];				// search array for square(and isometrtic) tile grids
-	Vector2i hex_search_array[6];					// search array for hexagonal tile grid
-
-	
-	
+	Array square_search_array;						// search array for square(and isometrtic) tile grids
+	Array hex_search_array_y_even;							// search array for hexagonal tile grid
+	Array hex_search_array_y_odd;
 
 	Array OPEN_list;
 	Array CLOSED_list;
 
-	// Methods
-
-	// Algorithms
-		// A*
-		Array AStar_Pathfinder(Vector2i start_node, Vector2i end_node);
-
-		// Dynamic Programming
-		Array DP_Pathfinder(Vector2i start_node, Vector2i end_node);
-		
-		// Dijkstra
-		Array Disjkstra_Pathfinder(Vector2i start_node, Vector2i end_node);
-		
-		// other...
-
-	// Helper methods
-		// label calculation
-		double Label_Calculator(Dictionary node_parent, Dictionary node);
-		
-		// neighbor search
-
-
-		// find minimal label
-		Dictionary find_minimum_label(Array& open_list, Vector2i end_node);
-
-	// JSON json_parser;
-
-	ConfigFile* data_saver;
-	// FileAccess file_access;
-
-protected:
-	static void _bind_methods();
-
-	// accessible parameters
+	ConfigFile* file_manager;
 	
-
-public:
-
-
-
-	// Constructor / Destructor
-	Universal_2D_Pathfinder();
-	~Universal_2D_Pathfinder();
-
-	void save_handler();
-	 
 	struct Node_Data {
 		Vector2i Node_coordinates = Vector2i(0,0);		// map coordinates of current node
 		Vector2i Node_parent = Vector2i(0,0);
@@ -120,14 +77,18 @@ public:
 		float Node_label = 0.0;							// the total cost to reach this node from start point
 	};
 
+	Dictionary storage;		// Node_Data counterpart for out of extension export
+	Array storage_array;	// storage for out of extension export of Preprocessed_Map
+	void set_storage_array(Array sta);
+	Array get_storage_array();
+
 	Vector<Vector<Node_Data>> Preprocessed_Map;
-	Node_Data test_array[2][2];
 
 
 
 	// void _process(double delta) override;
 
-	Array (Universal_2D_Pathfinder::*algorithm)(Vector2i, Vector2i);
+	
 
 	double time_passed;
 	
@@ -136,26 +97,33 @@ public:
 	void set_Start_position(const Vector2i new_start);
 	Vector2i get_Start_position() const;
 
-	Vector2i map_size = Vector2i(0,0);				// Coordinates of furthest tile from origin (0,0)
+	Vector2i map_size = Vector2i(0,0);				// Size of the map in tiles (x,y)
 	void set_map_size(const Vector2i new_mapsize);
 	Vector2i get_map_size() const;
 	
-	enum Heuristic {
-		EUCLID ,// h = sqrt(x^2 + y^2)
-		EUCLID_POW ,// h^weight
-		EUCLID_WGHT ,// h*weight
-		EUCLID_EXP ,//= exp(h)
-		MANHATAN // h = x + y
-	};
-	Heuristic Heuristic;
 
+
+	Array (Universal_2D_Pathfinder::*algorithm)(Vector2i, Vector2i);
 	enum Algorithm_Type {							// enum for selection of Pathfinding algorithm
-		AStar,										// Standard A* algorithm (mainly for realtime pathfinding)
+		ASTAR = 0,										// Standard A* algorithm (mainly for realtime pathfinding)
 		// Astar_Exponential,						// exponential heuristic with f = g + h*e^h	//potentially (fills Double numeric cappacity 1.7*10^308 with h>200)	have in-script logic to use this on small distances?
-		Dynamic_Programing,							// DP only for many starts to one target
-		Dijkstra									// standard Dijkstra algorithm (good for one start to many ends and preprocessing paths for later use)
-	};
-	Algorithm_Type Algorithm;
+		DIJKSTRA = 1,									// standard Dijkstra algorithm (good for one start to many ends and preprocessing paths for later use)
+		// Dynamic_Programing,							// DP only for many starts to one target
+		
+	} Algorithm;
+	void set_Algorithm(Universal_2D_Pathfinder::Algorithm_Type alg);
+	Universal_2D_Pathfinder::Algorithm_Type get_Algorithm() const;
+
+	enum Heuristic_Type {
+		EUCLID = 0,// h = sqrt(x^2 + y^2)
+		EUCLID_POW = 1 ,// h^weight
+		EUCLID_WGHT = 2,// h*weight
+		EUCLID_EXP = 3,//= exp(h)
+		MANHATAN = 4// h = x + y
+	} Heuristic;
+	void set_Heuristic(Universal_2D_Pathfinder::Heuristic_Type heur);
+	Universal_2D_Pathfinder::Heuristic_Type get_Heuristic() const;
+
 
 	// Methods
 	
@@ -164,18 +132,53 @@ public:
 			// Pathifinder
 			Array Pathfinder(Array Start_points_array, Array End_points_array, const bool debug = false);
 
-
-			
-
 			// Preprocessor
 			void Preprocessor();
 
 
-		// Setters / Getters
+		// Algorithms
+			// A*
+			Array AStar_Pathfinder(Vector2i start_node, Vector2i end_node);
 
-			// Preprocessed_Map
-			void set_Preprocessed_Map();
-			Vector<Vector<Node_Data>> get_Preprocessed_Map() const;
+			// Dynamic Programming
+			Array DP_Pathfinder(Vector2i start_node, Vector2i end_node);
+			
+			// Dijkstra
+			Array Disjkstra_Pathfinder(Vector2i start_node, Vector2i end_node);
+			
+			// other...
+
+		// Helper methods
+			// label calculation
+			double Label_Calculator(Universal_2D_Pathfinder::Node_Data node_parent, Universal_2D_Pathfinder::Node_Data node);
+			
+			// neighbor search
+
+
+			// Map initializer
+			bool button;
+			void map_initializer();
+			void set_button(bool but);
+			bool get_button();
+
+			// map savers
+			// to godot
+			Array Map_to_code();
+			// to .cfg file
+			void Map_to_file(String path_to_file);
+
+			// map loaders
+			// from godot
+			void Code_to_map(Array data);
+			// from .cfg file
+			void File_to_map(String path_to_file);
+
+
+			// find minimal label
+			Dictionary find_minimum_label(Array& open_list, Vector2i end_node);
+
+
+		// Setters / Getters
 
 
 			// MAX_PATH_LENGTH
@@ -184,10 +187,6 @@ public:
 
 			// path diversion
 
-
-			// Map
-			void set_Map(const TileMapLayer new_Map);
-			TileMapLayer get_Map() const;
 
 			// Waypoints
 			void set_Waypoints(const std::vector<Vector2i> new_waypoints);
@@ -200,13 +199,11 @@ public:
 			// HardEnd
 			void set_HardEnd(const Vector2i new_HardEnd);
 			Vector2i get_HardEnd() const;
-
-			// pathfinder
-			void set_Pathfinder(const int new_pathfinder);
-			int get_Pathfinder() const;
-		
 };
 
 }
+
+VARIANT_ENUM_CAST(Universal_2D_Pathfinder::Algorithm_Type);
+VARIANT_ENUM_CAST(Universal_2D_Pathfinder::Heuristic_Type);
 
 #endif
