@@ -43,6 +43,8 @@ public:
 	// 	Single_In_Order
 	// };
 
+	bool diagonals;
+
 	int MAX_PATH_LENGTH;							// maximum possible length of path before pathfinder termination
 	
 	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
@@ -53,12 +55,13 @@ public:
 	
 	Vector2i HardEnd;								// an override of the pathfinding target location (e.g. for tower defense where you only need paths to one set point)
 	
-	Dictionary costs_dictionary;					// dictionary extracted from .cfg file containing all costs for each tile variant
+	// String TileData;
+	Dictionary tile_data;							// dictionary extracted from .cfg file containing all costs for each tile variant
 	
 	Array Path;										// array of tile coordinates
 	Array Paths;									// array of all calculated paths
 	Array SearchVector;								// array of neighbor tiles
-	TileSet* Map_tileset;							// TileSet object
+	Ref<TileSet> Map_tileset;							// TileSet object
 	Array square_search_array;						// search array for square(and isometrtic) tile grids
 	Array hex_search_array_y_even;							// search array for hexagonal tile grid
 	Array hex_search_array_y_odd;
@@ -73,7 +76,7 @@ public:
 		Vector2i Node_parent = Vector2i(0,0);
 		Array Node_neighbors = Array{};					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
 		int Node_cost = 0;								// cost of movement onto this node
-		int Node_state = 0;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
+		int Reachable = 0;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
 		float Node_label = 0.0;							// the total cost to reach this node from start point
 	};
 
@@ -129,6 +132,9 @@ public:
 	
 		// Main methods
 
+			// init
+			void init();
+
 			// Pathifinder
 			Array Pathfinder(Array Start_points_array, Array End_points_array, const bool debug = false);
 
@@ -161,6 +167,14 @@ public:
 			void set_button(bool but);
 			bool get_button();
 
+
+
+
+			// find minimal label
+			Dictionary find_minimum_label(Array& open_list, Vector2i end_node);
+
+
+		// file management
 			// map savers
 			// to godot
 			Array Map_to_code();
@@ -174,9 +188,8 @@ public:
 			void File_to_map(String path_to_file);
 
 
-			// find minimal label
-			Dictionary find_minimum_label(Array& open_list, Vector2i end_node);
-
+			// load tileset cfg
+			void load_tileset_cfg(String path_to_file);
 
 		// Setters / Getters
 

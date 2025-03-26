@@ -1,12 +1,16 @@
-[gd_scene load_steps=3 format=4 uid="uid://bdn0kqm3bc3o4"]
+[gd_scene load_steps=7 format=4 uid="uid://bdn0kqm3bc3o4"]
 
 [ext_resource type="Script" path="res://universal_2d_pathfinder.gd" id="1_7xxce"]
-[ext_resource type="TileSet" uid="uid://pbfdtbcyofuj" path="res://tile_sets/square_tile_set.tres" id="1_krkvr"]
+[ext_resource type="TileSet" uid="uid://pbfdtbcyofuj" path="res://tile_sets/set/square_tile_set.tres" id="1_16m3o"]
+[ext_resource type="Texture2D" uid="uid://ma2pugdfnxvi" path="res://icon.svg" id="3_uea5g"]
+[ext_resource type="Script" path="res://agent.gd" id="4_yivt1"]
+[ext_resource type="Texture2D" uid="uid://c40fyqiuu5i6h" path="res://sprites/target_marker.png" id="5_4v45p"]
+[ext_resource type="Script" path="res://sprite_2d_2.gd" id="6_ywcc6"]
 
 [node name="main" type="Node2D"]
 
 [node name="Universal_2D_Pathfinder" type="Universal_2D_Pathfinder" parent="."]
-map_size = Vector2i(3, 3)
+map_size = Vector2i(5, 5)
 "storage array" = [[{
 "coordinates": Vector2i(0, 0),
 "cost": 0,
@@ -15,62 +19,185 @@ map_size = Vector2i(3, 3)
 "parent": Vector2i(0, 0),
 "state": 0
 }, {
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(0, 1),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }, {
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(0, 2),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 3),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(0, 4),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }], [{
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(1, 0),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }, {
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(1, 1),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }, {
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(1, 2),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(1, 3),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(1, 4),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }], [{
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(2, 0),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }, {
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(2, 1),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }, {
-"coordinates": Vector2i(0, 0),
+"coordinates": Vector2i(2, 2),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(2, 3),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(2, 4),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}], [{
+"coordinates": Vector2i(3, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(3, 1),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(3, 2),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(3, 3),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(3, 4),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}], [{
+"coordinates": Vector2i(4, 0),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(4, 1),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(4, 2),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(4, 3),
+"cost": 0,
+"label": 0.0,
+"neighbors": [],
+"parent": Vector2i(0, 0),
+"state": 0
+}, {
+"coordinates": Vector2i(4, 4),
 "cost": 0,
 "label": 0.0,
 "neighbors": [],
 "parent": Vector2i(0, 0),
 "state": 0
 }]]
-tile_map_data = PackedByteArray("AAAAAAEAAQAAAAAAAAABAAAAAQAAAAAAAAABAAEAAgAAAAAAAAACAAAAAgAAAAAAAAAAAAIAAgAAAAAAAAACAAIAAQAAAAAAAAACAAEAAAAAAAAAAAABAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
-tile_set = ExtResource("1_krkvr")
+tile_map_data = PackedByteArray("AAACAAIAAAAAAAAAAAACAAMAAAAAAAAAAAACAAQAAAAAAAAAAAACAAUAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAAAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAAAAAAAAAAAIAAQAAAAAAAAAAAAIAAUAAAAAAAAAAAAIAAYAAAAAAAAAAAAIAAcAAAAAAAAAAAAKAAMAAAAAAAAAAAAKAAQAAAAAAAAAAAALAAYAAAAAAAAAAAAMAAYAAAAAAAAAAAANAAYAAAAAAAAAAAANAAgAAAAAAAAAAAANAAkAAAAAAAAAAAAQAAgAAAAAAAAAAAAQAAcAAAAAAAAAAAAQAAYAAAAAAAAAAAARAAQAAAAAAAAAAAARAAMAAAAAAAAAAAAPAAIAAAAAAAAAAAAMAAQAAAAAAAAAAAAMAAMAAAAAAAAAAAAMAAIAAAAAAAAAAAAMAAEAAAAAAAAAAAAAAAAAAAABAAAAAAABAAAAAAABAAAAAAACAAAAAAABAAAAAAADAAAAAAABAAAAAAAEAAAAAAABAAAAAAAFAAAAAAABAAAAAAAGAAAAAAABAAAAAAAHAAAAAAABAAAAAAAIAAAAAAABAAAAAAAJAAAAAAABAAAAAAAKAAAAAAABAAAAAAALAAAAAAABAAAAAAAMAAAAAAABAAAAAAANAAAAAAABAAAAAAAOAAAAAAABAAAAAAAPAAAAAAABAAAAAAAQAAAAAAABAAAAAAARAAAAAAABAAAAAAASAAAAAAABAAAAAAATAAAAAAABAAAAAAATAAEAAAABAAAAAAATAAIAAAABAAAAAAATAAMAAAABAAAAAAATAAQAAAABAAAAAAATAAUAAAABAAAAAAATAAYAAAABAAAAAAATAAcAAAABAAAAAAATAAgAAAABAAAAAAATAAkAAAABAAAAAAASAAkAAAABAAAAAAARAAkAAAABAAAAAAAQAAkAAAABAAAAAAAPAAkAAAABAAAAAAAOAAkAAAABAAAAAAAAAAEAAAABAAAAAAAAAAIAAAABAAAAAAAAAAMAAAABAAAAAAAAAAQAAAABAAAAAAAAAAUAAAABAAAAAAAAAAYAAAABAAAAAAAAAAcAAAABAAAAAAAAAAgAAAABAAAAAAAAAAkAAAABAAAAAAABAAEAAAABAAAAAAABAAIAAAABAAAAAAABAAMAAAABAAAAAAABAAQAAAABAAAAAAABAAUAAAABAAAAAAABAAYAAAABAAAAAAABAAcAAAABAAAAAAABAAgAAAABAAAAAAABAAkAAAABAAAAAAACAAEAAAABAAAAAAACAAYAAAABAAAAAAACAAcAAAABAAAAAAACAAgAAAABAAAAAAACAAkAAAABAAAAAAADAAEAAAABAAAAAAADAAIAAAABAAAAAAADAAMAAAABAAAAAAADAAQAAAABAAAAAAADAAYAAAACAAAAAAADAAcAAAACAAAAAAADAAgAAAACAAAAAAADAAkAAAABAAAAAAAEAAEAAAABAAAAAAAEAAIAAAABAAAAAAAEAAMAAAABAAAAAAAEAAQAAAABAAAAAAAEAAYAAAACAAAAAAAEAAcAAAACAAAAAAAEAAgAAAACAAAAAAAEAAkAAAABAAAAAAAFAAEAAAABAAAAAAAFAAIAAAABAAAAAAAFAAMAAAABAAAAAAAFAAQAAAACAAAAAAAFAAYAAAACAAAAAAAFAAcAAAACAAAAAAAFAAgAAAACAAAAAAAFAAkAAAABAAAAAAAGAAEAAAABAAAAAAAGAAIAAAABAAAAAAAGAAQAAAACAAAAAAAGAAYAAAABAAAAAAAGAAcAAAABAAAAAAAGAAgAAAABAAAAAAAGAAkAAAABAAAAAAAHAAEAAAABAAAAAAAHAAIAAAABAAAAAAAHAAQAAAACAAAAAAAHAAUAAAABAAAAAAAHAAYAAAABAAAAAAAHAAcAAAABAAAAAAAHAAgAAAABAAAAAAAHAAkAAAABAAAAAAAIAAEAAAABAAAAAAAIAAIAAAABAAAAAAAIAAgAAAABAAAAAAAIAAkAAAABAAAAAAAJAAEAAAABAAAAAAAJAAIAAAABAAAAAAAJAAMAAAACAAAAAAAJAAQAAAACAAAAAAAJAAUAAAABAAAAAAAJAAYAAAABAAAAAAAJAAcAAAABAAAAAAAJAAgAAAABAAAAAAAJAAkAAAABAAAAAAAKAAEAAAABAAAAAAAKAAIAAAABAAAAAAAKAAUAAAABAAAAAAAKAAYAAAABAAAAAAAKAAcAAAABAAAAAAAKAAgAAAABAAAAAAAKAAkAAAABAAAAAAALAAEAAAABAAAAAAALAAIAAAABAAAAAAALAAMAAAABAAAAAAALAAQAAAABAAAAAAALAAUAAAABAAAAAAALAAcAAAABAAAAAAALAAgAAAABAAAAAAALAAkAAAABAAAAAAAMAAUAAAABAAAAAAAMAAcAAAABAAAAAAAMAAgAAAABAAAAAAAMAAkAAAABAAAAAAANAAEAAAABAAAAAAANAAIAAAABAAAAAAANAAMAAAABAAAAAAANAAQAAAABAAAAAAANAAUAAAABAAAAAAANAAcAAAABAAAAAAAOAAEAAAABAAAAAAAOAAIAAAABAAAAAAAOAAMAAAABAAAAAAAOAAQAAAABAAAAAAAOAAUAAAABAAAAAAAOAAYAAAABAAAAAAAOAAcAAAABAAAAAAAOAAgAAAABAAAAAAAPAAEAAAABAAAAAAAPAAMAAAABAAAAAAAPAAQAAAABAAAAAAAPAAUAAAABAAAAAAAPAAYAAAABAAAAAAAPAAcAAAABAAAAAAAPAAgAAAABAAAAAAAQAAEAAAABAAAAAAAQAAIAAAABAAAAAAAQAAMAAAABAAAAAAAQAAQAAAABAAAAAAAQAAUAAAACAAAAAAARAAEAAAABAAAAAAARAAIAAAABAAAAAAARAAUAAAABAAAAAAARAAYAAAABAAAAAAARAAcAAAABAAAAAAARAAgAAAABAAAAAAASAAEAAAABAAAAAAASAAIAAAABAAAAAAASAAMAAAABAAAAAAASAAQAAAABAAAAAAASAAUAAAABAAAAAAASAAYAAAABAAAAAAASAAcAAAABAAAAAAASAAgAAAABAAAAAAA=")
+tile_set = ExtResource("1_16m3o")
 script = ExtResource("1_7xxce")
+
+[node name="target_marker" type="Sprite2D" parent="."]
+position = Vector2(992, 544)
+texture = ExtResource("5_4v45p")
+script = ExtResource("6_ywcc6")
+
+[node name="agent" type="Sprite2D" parent="."]
+position = Vector2(32, 32)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("3_uea5g")
+script = ExtResource("4_yivt1")

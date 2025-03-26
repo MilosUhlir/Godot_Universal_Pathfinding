@@ -15,6 +15,11 @@
 			<description>
 			</description>
 		</method>
+		<method name="map_initializer">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
 	</methods>
 	<members>
 		<member name="Algorithm" type="int" setter="set_Algorithm" getter="get_Algorithm" enum="Universal_2D_Pathfinder.Algorithm_Type" default="0">
@@ -23,7 +28,11 @@
 		</member>
 		<member name="Start_position" type="Vector2i" setter="set_Start_position" getter="get_Start_position" default="Vector2i(0, 0)">
 		</member>
-		<member name="map_size" type="Vector2i" setter="set_map_size" getter="get_map_size" default="Vector2i(2, 2)">
+		<member name="debug button" type="bool" setter="set_button" getter="get_button" default="false">
+		</member>
+		<member name="map_size" type="Vector2i" setter="set_map_size" getter="get_map_size" default="Vector2i(0, 0)">
+		</member>
+		<member name="storage array" type="Array" setter="set_storage_array" getter="get_storage_array" default="[]">
 		</member>
 	</members>
 	<constants>

@@ -59,6 +59,7 @@ void Universal_2D_Pathfinder::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_storage_array"), &Universal_2D_Pathfinder::get_storage_array);
     ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "storage array"), "set_storage_array", "get_storage_array");
 
+
 }
 
 Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
@@ -66,89 +67,35 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
     // Universal_2D_Pathfinder::map_initializer();
 
 
-    // search arrays initialization
-    square_search_array.append(Vector2i( 1, 0));
-    square_search_array.append(Vector2i( 1, 1));
-    square_search_array.append(Vector2i( 0, 1));
-    square_search_array.append(Vector2i(-1, 1));
-    square_search_array.append(Vector2i(-1, 0));
-    square_search_array.append(Vector2i(-1,-1));
-    square_search_array.append(Vector2i( 0,-1));
-    square_search_array.append(Vector2i( 1,-1));
+    init();
 
-    hex_search_array_y_even.append(Vector2i( 1, 0));
-    hex_search_array_y_even.append(Vector2i( 0, 1));
-    hex_search_array_y_even.append(Vector2i(-1, 1));
-    hex_search_array_y_even.append(Vector2i(-1, 0));
-    hex_search_array_y_even.append(Vector2i(-1,-1));
-    hex_search_array_y_even.append(Vector2i( 0,-1));
+    
 
-    hex_search_array_y_odd.append(Vector2i( 1, 0));
-    hex_search_array_y_odd.append(Vector2i( 1, 1));
-    hex_search_array_y_odd.append(Vector2i( 0, 1));
-    hex_search_array_y_odd.append(Vector2i(-1, 0));
-    hex_search_array_y_odd.append(Vector2i( 0,-1));
-    hex_search_array_y_odd.append(Vector2i( 1,-1));
 
-    Algorithm = ASTAR;
-    Heuristic = EUCLID;
-
-    storage["coordinates"]  = Vector2i(0,0);
-    storage["parent"] = Vector2i(0,0);
-    storage["neighbors"] = Array{};
-    storage["cost"] = 0;
-    storage["state"] = 0;
-    storage["label"] = 0.0;
     // UtilityFunctions::print(storage);
 
-    // Testing portion of constructor
+    //%%%%%%% Testing portion of constructor
+
+    Array tile_red;
+    tile_red.append(0);
+    tile_red.append(false);
+    tile_data[Vector2i(0,0)] = tile_red;
+    Array tile_green;
+    tile_green.append(1);
+    tile_green.append(true);
+    tile_data[Vector2i(1,0)] = tile_green;
+    Array tile_blue;
+    tile_blue.append(5);
+    tile_blue.append(true);
+    tile_data[Vector2i(2,0)] = tile_blue;
+    UtilityFunctions::print("tile_data: ", tile_data);
+    
 
     // map_size = Vector2i(2,2);
 
     // Universal_2D_Pathfinder::map_initializer();
 
     // UtilityFunctions::print("map size: ", Preprocessed_Map.size(),"x",Preprocessed_Map[0].size());
-
-
-    // // // Preprocessed_Map.write[0].write[0].Node_coordinates = Vector2i(2,5);
-    // // Preprocessed_Map.write[0].write[0].Node_cost = 15;
-    // // Preprocessed_Map.write[0].write[0].Node_label = 6.5;
-    // // Preprocessed_Map.write[0].write[0].Node_neighbors.append(Vector2i(0,0));
-    // // Preprocessed_Map.write[0].write[0].Node_parent = Vector2i(2,2);
-    // // Preprocessed_Map.write[0].write[0].Node_state = 5;
-
-    // UtilityFunctions::print("Preprocessed_Map[0][0]");
-    // UtilityFunctions::print(Preprocessed_Map[0][0].Node_coordinates);
-    // UtilityFunctions::print(Preprocessed_Map[0][0].Node_cost);
-    // UtilityFunctions::print(Preprocessed_Map[0][0].Node_label);
-    // UtilityFunctions::print(Preprocessed_Map[0][0].Node_neighbors);
-    // UtilityFunctions::print(Preprocessed_Map[0][0].Node_parent);
-    // UtilityFunctions::print(Preprocessed_Map[0][0].Node_state);
-    // UtilityFunctions::print("Preprocessed_Map[0][1]");
-    // UtilityFunctions::print(Preprocessed_Map[0][1].Node_coordinates);
-    // UtilityFunctions::print(Preprocessed_Map[0][1].Node_cost);
-    // UtilityFunctions::print(Preprocessed_Map[0][1].Node_label);
-    // UtilityFunctions::print(Preprocessed_Map[0][1].Node_neighbors);
-    // UtilityFunctions::print(Preprocessed_Map[0][1].Node_parent);
-    // UtilityFunctions::print(Preprocessed_Map[0][1].Node_state);
-
-
-    // UtilityFunctions::print("test_array:");
-    // Array test_array;
-    // Array test_row;
-    // test_row.append("test1");
-    // test_row.append("test2");
-    // test_array.append(test_row);
-    // test_row[0] = "test3";
-    // test_row[1] = "test4";
-    // test_array.append(test_row);
-    // UtilityFunctions::print(test_array);
-    // // UtilityFunctions::print(test_array[0][0].Node_coordinates);
-    // // UtilityFunctions::print(test_array[0][0].Node_cost);
-    // // UtilityFunctions::print(test_array[0][0].Node_label);
-    // // UtilityFunctions::print(test_array[0][0].Node_neighbors);
-    // // UtilityFunctions::print(test_array[0][0].Node_parent);
-    // // UtilityFunctions::print(test_array[0][0].Node_state);
     
 }
 
@@ -161,9 +108,9 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         // // run preprocessor on scene close in editor
         // UtilityFunctions::print("storage_array.size(): ", storage_array.size());
         // UtilityFunctions::print("Preprocessed_Map.size(): ", Preprocessed_Map.size());
-        if (Preprocessed_Map.size() <= map_size.x) {
-            Preprocessor();
-        }
+        // if (Preprocessed_Map.size() <= map_size.x) {
+        //     Preprocessor();
+        // }
 
         // file_manager = memnew(ConfigFile());
         // file_manager->set_value("section1", "map_1", storage_array);
@@ -184,6 +131,44 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
 
 // Main methods
+    void Universal_2D_Pathfinder::init() {
+
+        // search arrays initialization
+        square_search_array.append(Vector2i( 1, 0));
+        square_search_array.append(Vector2i( 0, 1));
+        square_search_array.append(Vector2i(-1, 0));
+        square_search_array.append(Vector2i( 0,-1));
+        square_search_array.append(Vector2i( 1, 1));
+        square_search_array.append(Vector2i( 1,-1));
+        square_search_array.append(Vector2i(-1, 1));
+        square_search_array.append(Vector2i(-1,-1));
+
+        hex_search_array_y_even.append(Vector2i( 1, 0));
+        hex_search_array_y_even.append(Vector2i( 0, 1));
+        hex_search_array_y_even.append(Vector2i(-1, 1));
+        hex_search_array_y_even.append(Vector2i(-1, 0));
+        hex_search_array_y_even.append(Vector2i(-1,-1));
+        hex_search_array_y_even.append(Vector2i( 0,-1));
+
+        hex_search_array_y_odd.append(Vector2i( 1, 0));
+        hex_search_array_y_odd.append(Vector2i( 1, 1));
+        hex_search_array_y_odd.append(Vector2i( 0, 1));
+        hex_search_array_y_odd.append(Vector2i(-1, 0));
+        hex_search_array_y_odd.append(Vector2i( 0,-1));
+        hex_search_array_y_odd.append(Vector2i( 1,-1));
+
+        Algorithm = ASTAR;
+        Heuristic = EUCLID;
+
+        storage["coordinates"] = Vector2i(0,0);
+        storage["parent"] = Vector2i(0,0);
+        storage["neighbors"] = Array{};
+        storage["cost"] = 0;
+        storage["state"] = 0;
+        storage["label"] = 0.0;
+        return;
+    }
+
 
     // Pathfinder
     Array Universal_2D_Pathfinder::Pathfinder(Array Start_points_array, Array End_points_array, const bool debug) {
@@ -312,24 +297,34 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 map_initializer();
             }
 
-        //     int map_size_x = map_size.x;
-        //     int map_size_y = map_size.y;
             for (int32_t x = 0; x < map_size.x; x++) {
                 // UtilityFunctions::print("x: ", x);
                 for (int32_t y = 0; y < map_size.y; y++) {
+                    
                     // UtilityFunctions::print("y: ", y);
-                    UtilityFunctions::print("coordinates: ", Vector2i(x,y));
+                    // UtilityFunctions::print("coordinates: ", Vector2i(x,y));
                     Vector2i node_atlas_coords = get_cell_atlas_coords(Vector2i(x,y));
                     int node_tile_id = get_cell_source_id(Vector2i(x,y));
-                    UtilityFunctions::print("node_tile_id: ", node_tile_id);
-                    UtilityFunctions::print("node_atlas_coords: ", node_atlas_coords);
+                    // UtilityFunctions::print("node_tile_id: ", node_tile_id);
+                    // UtilityFunctions::print("node_atlas_coords: ", node_atlas_coords);
+                    // UtilityFunctions::print("tile_cost: ", tile_cost);
+
+                    Array data = tile_data[node_atlas_coords];
+                    int tile_cost = data[0];
+                    bool reachable = data[1];
+
+
+
                     // Node_Data map_node = map_x[y];
                     // Preprocessed_Map.write[x].write[y].Node_coordinates = Vector2i(x,y);
                     // Preprocessed_Map.write[x].write[y].Node_parent;
                     // Preprocessed_Map.write[x].write[y].Node_neighbors = Array{};
-                    Preprocessed_Map.write[x].write[y].Node_cost = 0;
-                    Preprocessed_Map.write[x].write[y].Node_state = 0;
+                    Preprocessed_Map.write[x].write[y].Node_cost = tile_cost;
+                    Preprocessed_Map.write[x].write[y].Reachable = reachable;
                     // Preprocessed_Map.write[x].write[y].Node_label = 0.0;
+
+                    // UtilityFunctions::print("Node cost: ", Preprocessed_Map[x][y].Node_cost);
+                    // UtilityFunctions::print("Reachable: ", Preprocessed_Map[x][y].Reachable);
                     
                 }
             }
@@ -392,38 +387,21 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     y_storage.clear();
                     for (int y = 0; y < size_y; y++) {
                         init_data.Node_coordinates = Vector2i(x,y);
+                        storage["coordinates"] = Vector2i(x,y);
                         // UtilityFunctions::print("x: ", x, "|y: ", y, "|coordinates:", init_data.Node_coordinates);
                         y_row.append(init_data);
-                        y_storage.append(storage);
+                        y_storage.append(storage.duplicate());
                     }
                     x_row.append(y_row);
-                    x_storage.append(y_storage);
+                    x_storage.append(y_storage.duplicate());
                 }
             }
             Preprocessed_Map = x_row;
-            storage_array = x_storage;
+            storage_array = x_storage.duplicate();
             UtilityFunctions::print("Map initialized");
         }
 
-        // map savers
-        // to godot
-        Array Universal_2D_Pathfinder::Map_to_code() {
-            return Array{};
-        }
-        // to .cfg file
-        void Universal_2D_Pathfinder::Map_to_file(String path_to_file) {
-            return;
-        }
 
-        // map loaders
-        // from godot
-        void Universal_2D_Pathfinder::Code_to_map(Array data) {
-            return;
-        }
-        // from .cfg file
-        void Universal_2D_Pathfinder::File_to_map(String path_to_file) {
-            return;
-        }
 
         // find minimal label
         Dictionary Universal_2D_Pathfinder::find_minimum_label(Array& open_list, Vector2i end_node) {
@@ -463,7 +441,33 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         };
 
 
+    // File management
+        // map savers
+        // to godot
+        Array Universal_2D_Pathfinder::Map_to_code() {
+            return Array{};
+        }
+        // to .cfg file
+        void Universal_2D_Pathfinder::Map_to_file(String path_to_file) {
+            return;
+        }
 
+        // map loaders
+        // from godot
+        void Universal_2D_Pathfinder::Code_to_map(Array data) {
+            return;
+        }
+        // from .cfg file
+        void Universal_2D_Pathfinder::File_to_map(String path_to_file) {
+            return;
+        }
+
+        // tileset .cfg
+        void Universal_2D_Pathfinder::load_tileset_cfg(String path_to_file) {
+            
+            
+            return;
+        }
 
 
 // getters and setters

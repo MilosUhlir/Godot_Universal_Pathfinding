@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cx1wo5xam72e2"
-path="res://.godot/imported/walkable1.png-cb9427a16abe064216ebbabf638e28db.ctex"
+uid="uid://c40fyqiuu5i6h"
+path="res://.godot/imported/target_marker.png-c074f084e2be3795c2bc63d3c10d9552.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tiles/walkable1.png"
-dest_files=["res://.godot/imported/walkable1.png-cb9427a16abe064216ebbabf638e28db.ctex"]
+source_file="res://sprites/target_marker.png"
+dest_files=["res://.godot/imported/target_marker.png-c074f084e2be3795c2bc63d3c10d9552.ctex"]
 
 [params]
 
