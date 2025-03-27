@@ -43,7 +43,9 @@ public:
 	// 	Single_In_Order
 	// };
 
-	bool diagonals;
+	bool diagonal;
+	void set_diagonal(const bool diag);
+	bool get_diagonal() const;
 
 	int MAX_PATH_LENGTH;							// maximum possible length of path before pathfinder termination
 	
@@ -61,7 +63,7 @@ public:
 	Array Path;										// array of tile coordinates
 	Array Paths;									// array of all calculated paths
 	Array SearchVector;								// array of neighbor tiles
-	Ref<TileSet> Map_tileset;							// TileSet object
+	TileSet* Map_tileset;							// TileSet object
 	Array square_search_array;						// search array for square(and isometrtic) tile grids
 	Array hex_search_array_y_even;							// search array for hexagonal tile grid
 	Array hex_search_array_y_odd;
@@ -74,16 +76,17 @@ public:
 	struct Node_Data {
 		Vector2i Node_coordinates = Vector2i(0,0);		// map coordinates of current node
 		Vector2i Node_parent = Vector2i(0,0);
-		Array Node_neighbors = Array{};					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
+		Vector<Vector2i> Node_neighbors;					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
 		int Node_cost = 0;								// cost of movement onto this node
-		int Reachable = 0;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
+		bool Reachable = false;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
 		float Node_label = 0.0;							// the total cost to reach this node from start point
+		Node_Data();
 	};
 
 	Dictionary storage;		// Node_Data counterpart for out of extension export
 	Array storage_array;	// storage for out of extension export of Preprocessed_Map
-	void set_storage_array(Array sta);
-	Array get_storage_array();
+	// void set_storage_array(Array sta);
+	// Array get_storage_array();
 
 	Vector<Vector<Node_Data>> Preprocessed_Map;
 
@@ -163,7 +166,7 @@ public:
 
 			// Map initializer
 			bool button;
-			void map_initializer();
+			void map_initializer(int type);
 			void set_button(bool but);
 			bool get_button();
 
@@ -177,15 +180,15 @@ public:
 		// file management
 			// map savers
 			// to godot
-			Array Map_to_code();
+			Array save_to_code();
 			// to .cfg file
-			void Map_to_file(String path_to_file);
+			void save_to_file(String path_to_file);
 
 			// map loaders
 			// from godot
-			void Code_to_map(Array data);
+			void load_from_code(Array data);
 			// from .cfg file
-			void File_to_map(String path_to_file);
+			void load_from_file(String path_to_file);
 
 
 			// load tileset cfg
