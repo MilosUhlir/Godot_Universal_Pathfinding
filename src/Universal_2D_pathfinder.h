@@ -124,12 +124,17 @@ public:
 		EUCLID = 0,// h = sqrt(x^2 + y^2)
 		EUCLID_POW = 1 ,// h^weight
 		EUCLID_WGHT = 2,// h*weight
-		EUCLID_EXP = 3,//= exp(h)
-		MANHATAN = 4// h = x + y
+		EUCLID_EXP = 3,// h * exp(h)
+		MANHATAN = 4,// h = x + y
+		CHEBYSHEV = 5, // h = max(x, y)
+		OCTILE = 6, // h = (min(x, y) * sqrt(2)) + (max(x, y) - min(x, y))
 	} Heuristic;
 	void set_Heuristic(Universal_2D_Pathfinder::Heuristic_Type heur);
 	Universal_2D_Pathfinder::Heuristic_Type get_Heuristic() const;
 
+	int weight;
+	void set_weight(float w);
+	int get_weight() const;
 
 	// Methods
 	
@@ -159,7 +164,7 @@ public:
 
 		// Helper methods
 			// label calculation
-			double Label_Calculator(Universal_2D_Pathfinder::Node_Data node_parent, Universal_2D_Pathfinder::Node_Data node);
+			void Label_Calculator(Vector2i node, Vector2i end);
 			
 			// neighbor search
 
@@ -174,8 +179,7 @@ public:
 
 
 			// find minimal label
-			Dictionary find_minimum_label(Array& open_list, Vector2i end_node);
-
+			Array find_minimum_label(Array& open_list);
 
 		// file management
 			// map savers
