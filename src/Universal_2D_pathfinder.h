@@ -47,7 +47,7 @@ public:
 	void set_diagonal(const bool diag);
 	bool get_diagonal() const;
 
-	int MAX_PATH_LENGTH;							// maximum possible length of path before pathfinder termination
+	int MAX_PATH_LENGTH = 10000;							// maximum possible length of path before pathfinder termination
 	
 	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
 
@@ -75,11 +75,12 @@ public:
 	
 	struct Node_Data {
 		Vector2i Node_coordinates = Vector2i(0,0);		// map coordinates of current node
-		Vector2i Node_parent = Vector2i(0,0);
-		Vector<Vector2i> Node_neighbors;					// array of coordinates of neighboring nodes. Maximum of 8  for normal maps, +2 for custom neighbouring tiles (i.e. teleports/tunels etc.)
-		int Node_cost = 0;								// cost of movement onto this node
-		bool Reachable = false;								// custom user defined tile state (0 always obstacle, 1 and above are all custom i.e. concrete, mud, bog, water, etc.)
-		float Node_label = 0.0;							// the total cost to reach this node from start point
+		Vector2i Node_parent = Vector2i(0,0);			// parent node of the current one
+		Array Node_neighbors;				// array of coordinates of neighboring nodes
+		int Node_cost = 0;								// cost of movement onto this node - user defined from cfg file
+		int Distance_to = 0;						// current distance from start to this point g(n)
+		bool Reachable = false;							// if node can be reached - user defined from cfg file
+		double Node_label = 1.7e50;						// the total cost to reach this node from start point f(n) = g(n) = h(n)
 		Node_Data();
 	};
 
@@ -132,7 +133,7 @@ public:
 	void set_Heuristic(Universal_2D_Pathfinder::Heuristic_Type heur);
 	Universal_2D_Pathfinder::Heuristic_Type get_Heuristic() const;
 
-	int weight;
+	int weight = 1;
 	void set_weight(float w);
 	int get_weight() const;
 
@@ -164,7 +165,7 @@ public:
 
 		// Helper methods
 			// label calculation
-			void Label_Calculator(Vector2i node, Vector2i end);
+			double Label_Calculator(Vector2i node, Vector2i end, bool overwrite);
 			
 			// neighbor search
 

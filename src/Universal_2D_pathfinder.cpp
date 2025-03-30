@@ -64,6 +64,10 @@ void Universal_2D_Pathfinder::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_diagonal"), &Universal_2D_Pathfinder::set_diagonal);
     ClassDB::bind_method(D_METHOD("get_diagonal"), &Universal_2D_Pathfinder::get_diagonal);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "diagonal movement"), "set_diagonal", "get_diagonal");
+
+    ClassDB::bind_method(D_METHOD("set_weight"), &Universal_2D_Pathfinder::set_weight);
+    ClassDB::bind_method(D_METHOD("get_weight"), &Universal_2D_Pathfinder::get_weight);
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "Weight"), "set_weight", "get_weight");
 }
 
 Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
@@ -180,6 +184,11 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // Pathfinder
     Array Universal_2D_Pathfinder::Pathfinder(Array Start_points_array, Array End_points_array, const bool debug) {
+        if (Preprocessed_Map.size() < 1) {
+            map_initializer(0);
+        } else if (Preprocessed_Map[0].size() < 1) {
+            map_initializer(0);
+        }
         Paths = Array();
         Path = Array();
         // Path.append(Vector2i(1,5));
@@ -189,7 +198,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         // Path.append(Vector2i(10,25));
         // Path.append(Vector2i(45,26));
         // Paths.append(Path);
-        UtilityFunctions::print("test pthfinder");
         switch (Algorithm) {
             case 0:
                 algorithm = &Universal_2D_Pathfinder::AStar_Pathfinder;
@@ -204,14 +212,18 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
         // one to one path
         if (Start_points_array.size() == 1 && End_points_array.size() == 1) {
-            (debug == true) ? UtilityFunctions::print("one to one path") : nullptr;     // print message if debug is true
+            if (debug == true) { 
+                UtilityFunctions::print("one to one path");     // print message if debug is true
+            }
             Path = (this->*algorithm)(Start_points_array[0], End_points_array[0]);      // finds path
             Paths.append(Path);                                                         // appends path to the list of paths
         }
 
         // many to one paths
         else if (Start_points_array.size() > 1 && End_points_array.size() == 1) {
-            (debug == true) ? UtilityFunctions::print("many to one paths") : nullptr;
+            if (debug == true) {
+                UtilityFunctions::print("many to one paths");
+            }
             for (int i = 0; i < Start_points_array.size(); i++)
             {
                 /* code */
@@ -222,7 +234,9 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
         // one to many paths
         else if (Start_points_array.size() == 1 && End_points_array.size() > 1) {
-            (debug == true) ? UtilityFunctions::print("one to many paths") : nullptr;
+            if (debug == true) {
+                UtilityFunctions::print("one to many paths");
+            }
             for (int i = 0; i < End_points_array.size(); i++)
             {
                 /* code */
@@ -233,8 +247,9 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
         // many to many paths (MUST HAVE the same number of starts and ends!!!)
         else if (Start_points_array.size() > 1 && End_points_array.size() > 1) {
-            (debug == true) ? UtilityFunctions::print("many to many paths") : nullptr;
-
+            if (debug == true) {
+                UtilityFunctions::print("many to many paths");
+            }
             // error handling of arrays are not the same size
             Array err = {};
             ERR_FAIL_COND_V_EDMSG(Start_points_array.size() != End_points_array.size(), err, "Start and End point arrays are not the same size");
@@ -253,7 +268,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // Algorithms
         // A*
         Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
-            UtilityFunctions::print("test a*");
             // put first node into OPEN, CLOSED is empty
             int start_x = start_node.x;
             int start_y = start_node.y;
@@ -261,21 +275,23 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
             // const Node_Data* first_node;
             // first_node = &Preprocessed_Map[start_x][start_y];
-            OPEN_list.append(Vector2i(start_x,start_y));
-            // UtilityFunctions::print("OPEN_list: ", OPEN_list);
+            OPEN_list.append(start_node);
+            UtilityFunctions::print("OPEN_list: ", OPEN_list);
 
             if (OPEN_list.is_empty()) {
                 return Array();
             };
-            Label_Calculator(OPEN_list[0], end_node);
-            UtilityFunctions::print("Node_coordinates: ", Preprocessed_Map[start_x][start_y].Node_coordinates);
-            UtilityFunctions::print("Node_cost: ", Preprocessed_Map[start_x][start_y].Node_cost);
-            UtilityFunctions::print("Node_label: ", Preprocessed_Map[start_x][start_y].Node_label);
-            UtilityFunctions::print("Node_parent: ", Preprocessed_Map[start_x][start_y].Node_parent);
-            UtilityFunctions::print("Reachable: ", Preprocessed_Map[start_x][start_y].Reachable);
-
-            Astar_while:
-            while (!OPEN_list.is_empty()) {
+            Label_Calculator(OPEN_list[0], end_node, true);
+            // UtilityFunctions::print("Node_coordinates: ", Preprocessed_Map[start_x][start_y].Node_coordinates);
+            // UtilityFunctions::print("Node_cost: ", Preprocessed_Map[start_x][start_y].Node_cost);
+            // UtilityFunctions::print("Node_label: ", Preprocessed_Map[start_x][start_y].Node_label);
+            // UtilityFunctions::print("Node_parent: ", Preprocessed_Map[start_x][start_y].Node_parent);
+            // UtilityFunctions::print("Reachable: ", Preprocessed_Map[start_x][start_y].Reachable);
+            bool exit_flag = false;
+            Vector2i previous_node;
+            Vector2i current_node;
+            Vector2i min;
+            while (exit_flag == false) {
                 // if OPEN list is empty there is no solution -> terminate search
                 if (OPEN_list.is_empty()) {
                     return Array();
@@ -283,14 +299,77 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
                 // pull node with the smallest f(i) value in OPEN, if multiple check if any is end node
                 Array mins = find_minimum_label(OPEN_list);
-                
-                OPEN_list.pop_back();
+                if (mins.size() > 1) {
+                    for (int i = 0; i < mins.size(); i++) {
+                        if (mins[i] == end_node) {
+                            // exit_flag = true;
+                            min = mins[i];
+                            break;
+                        } else {
+                            min = mins[0];
+                        }
+                    }
+                } else if (mins.size() == 1) {
+                    min = mins[0];
+                } else {
+                    break;
+                }
+                int idx = OPEN_list.find(min, 0);
+                current_node = OPEN_list.pop_at(idx);
+                UtilityFunctions::print("current_node: ", current_node, " end_node: ", end_node);
+                if (current_node == end_node) {
+                    break;
+                }
+
+                CLOSED_list.append(current_node);
+
+                // expanding neighbors
+                for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
+                    Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
+                    bool open_has = OPEN_list.has(curr_nbr);
+                    bool closed_has = CLOSED_list.has(curr_nbr);
+                    if (open_has == true || closed_has == true) {
+                        double f_n = Label_Calculator(curr_nbr, end_node, false);
+                        if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Node_label) {
+                            Label_Calculator(curr_nbr, end_node, true);
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
+                            if (closed_has && !open_has) {
+                                OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
+                            }
+                        }
+                    } else {
+                        OPEN_list.append(curr_nbr);
+                    }
+                }
+
+                if (OPEN_list.is_empty()) {
+                    return Array();
+                };
+
+                if (exit_flag == true) {
+                    break;
+                }
             }
 
+            current_node = end_node;
+            Path.append(current_node);
+            while (!(current_node == start_node)) {
+                current_node = Preprocessed_Map[current_node.x][current_node.y].Node_parent;
+                Path.append(current_node);
+                if (Path.size() >= MAX_PATH_LENGTH) {
+                    break;
+                }
+            }
+            
+
+
             UtilityFunctions::print("A* finished");
+            UtilityFunctions::print("OPEN_list: ", OPEN_list);
+            UtilityFunctions::print("CLOSED_list: ", CLOSED_list);
             Array placeholder;
             placeholder.append(Vector2i(0,0));
-            return placeholder;
+            // return placeholder;
+            return Path;
         }
 
         
@@ -318,19 +397,22 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             return;
         }
         else {
-
-            if (Preprocessed_Map.size() != map_size.x) {
-                map_initializer(0);
-            }
-
+            if (Preprocessed_Map.size() != map_size.x) { map_initializer(0); }
             for (int32_t x = 0; x < map_size.x; x++) {
                 // UtilityFunctions::print("x: ", x);
                 for (int32_t y = 0; y < map_size.y; y++) {
+                    int tile_cost;
+                    bool reachable;
                     Vector2i node_atlas_coords = get_cell_atlas_coords(Vector2i(x,y));
                     int node_tile_id = get_cell_source_id(Vector2i(x,y));
                     Array data = tile_data[node_atlas_coords];
-                    int tile_cost = data[0];
-                    bool reachable = data[1];
+                    if (node_atlas_coords == Vector2i(-1,-1)) {
+                        tile_cost = 0;
+                        reachable = false;
+                    } else {
+                        tile_cost = data[0];
+                        reachable = data[1];
+                    }
                     Preprocessed_Map.write[x].write[y].Node_cost = tile_cost;
                     Preprocessed_Map.write[x].write[y].Reachable = reachable;
                 }
@@ -341,7 +423,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             TileSet::TileShape Map_shape = Map_tileset->get_tile_shape();
             for (int32_t x = 0; x < map_size.x; x++) {
                 for (int32_t y = 0; y < map_size.y; y++) {
-                    
                     SearchVector.clear();
                     switch (Map_shape)
                     {
@@ -378,8 +459,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                             SearchVector = hex_search_array_y_odd;
                         }
                     }
-                    // UtilityFunctions::print("neighbors: ", neighbors);
-                    // Preprocessed_Map.write[x].write[y].Node_neighbors.append_array(neighbors);
                     for (int i = 0; i < neighbors.size(); i++) {
                         Vector2i n = neighbors[i];
                         if (!(n.x < 0) && !(n.y < 0) && !(n.x > map_size.x-1) && !(n.y > map_size.y-1))
@@ -405,56 +484,61 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // Helper methods
         // label calculation
-        void Universal_2D_Pathfinder::Label_Calculator(Vector2i _node, Vector2i end) {
+        double Universal_2D_Pathfinder::Label_Calculator(Vector2i _node, Vector2i end, bool overwrite) {
             Vector2i coords = Preprocessed_Map[_node.x][_node.y].Node_coordinates;
             int cost = Preprocessed_Map[_node.x][_node.y].Node_cost;
             Vector2i parent = Preprocessed_Map[_node.x][_node.y].Node_parent;
-            float parent_label = Preprocessed_Map[parent.x][parent.y].Node_label;
-            float h = 0.0;
+            float parent_distance = Preprocessed_Map[parent.x][parent.y].Distance_to;
+            double h;
             int x = abs(coords.x - end.x);
             int y = abs(coords.y - end.y);
+            double x_pow = pow(x, 2);;
+            double y_pow = pow(y, 2);;
+            // UtilityFunctions::print("this is heuristic test of x^2\n", x, "^2 = ", pow(x, 2));
+            // UtilityFunctions::print("this is heuristic test of y^2\n", y, "^2 = ", pow(y, 2));
             switch (Heuristic)
             {
             case 0:
-                h = sqrt(x^2 + y^2);
-                UtilityFunctions::print("heur: ", h, "-> h = ", h);
+                h = sqrt(x_pow + y_pow);
                 break;
             case 1:
-                h = pow(sqrt(x^2 + y^2), weight);
-                UtilityFunctions::print("heur: ", h, "-> h = ", h);
+                h = pow(sqrt(x_pow + y_pow), weight);
                 break;
             case 2:
-                h = sqrt(x^2 + y^2) * weight;
-                UtilityFunctions::print("heur: ", h, "-> h = ", h);
+                h = sqrt(x_pow + y_pow) * weight;
                 break;
             case 3:
-                h = sqrt(x^2 + y^2);
+                h = sqrt(x_pow + y_pow);
                 h = h * exp(h);
-                UtilityFunctions::print("heur: ", h, "-> h = ", h);
                 break;
             case 4:
                 h = x + y;
-                UtilityFunctions::print("heur: ", h, "-> h = ", h);
                 break;
             case 5:
                 h = (x > y) ? x : y; // if x > y -> x else y
-                UtilityFunctions::print("heur: ", h, "-> h = ", h);
                 break;
             case 6:
                 int max = (x > y) ? x : y; // if x > y -> x else y
                 int min = (x < y) ? x : y; // if x < y -> x else y
                 h = (min * (sqrt(2) - 1)) + max;
-                UtilityFunctions::print("heur: ", h, "-> h = ", h);
                 break;
             }
-            Preprocessed_Map.write[_node.x].write[_node.y].Node_label = parent_label + cost + h;
-            
-            UtilityFunctions::print("Node_coordinates: ", Preprocessed_Map[_node.x][_node.y].Node_coordinates);
-            UtilityFunctions::print("Node_cost: ", Preprocessed_Map[_node.x][_node.y].Node_cost);
-            UtilityFunctions::print("Node_label: ", Preprocessed_Map[_node.x][_node.y].Node_label);
-            UtilityFunctions::print("Node_parent: ", Preprocessed_Map[_node.x][_node.y].Node_parent);
-            UtilityFunctions::print("Reachable: ", Preprocessed_Map[_node.x][_node.y].Reachable);
-            return;
+            UtilityFunctions::print("heur: ", Heuristic, " -> h = ", h);
+
+            if (overwrite) {
+                Preprocessed_Map.write[_node.x].write[_node.y].Distance_to = parent_distance + cost;
+                Preprocessed_Map.write[_node.x].write[_node.y].Node_label = parent_distance + cost + h;
+                // UtilityFunctions::print("Node_coordinates: ", Preprocessed_Map[_node.x][_node.y].Node_coordinates);
+                // UtilityFunctions::print("Node_cost: ", Preprocessed_Map[_node.x][_node.y].Node_cost);
+                // UtilityFunctions::print("Node_label: ", Preprocessed_Map[_node.x][_node.y].Node_label);
+                // UtilityFunctions::print("Node_parent: ", Preprocessed_Map[_node.x][_node.y].Node_parent);
+                // UtilityFunctions::print("Reachable: ", Preprocessed_Map[_node.x][_node.y].Reachable);
+                return 0.0;
+            } else {
+                double f_n;
+                f_n = parent_distance + cost + h;
+                return f_n;
+            }
         }
 
 
@@ -467,9 +551,25 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             // if (button == false) {button = true;}
             button = but;
             if (button == true) {
-                map_initializer(0);
+                // map_initializer(0);
                 Preprocessor();
-                Label_Calculator(Vector2i(0,0), Vector2i(1,1));
+                Array t_s;
+                t_s.append(Vector2i(0,0));
+                Array t_e;
+                t_e.append(Vector2i(2,2));
+                Array path = Pathfinder(t_s, t_e, true);
+                UtilityFunctions::print("path: ", path);
+                // AStar_Pathfinder(Vector2i(0,0), Vector2i(1,1));
+                // Label_Calculator(Vector2i(0,0), Vector2i(1,1), true);
+                
+                // Array test;
+                // test.append(Vector2i(0,0));
+                // test.append(Vector2i(1,1));
+                // Preprocessed_Map.write[0].write[0].Node_label = 2.1;
+                // Preprocessed_Map.write[1].write[1].Node_label = 3.0;
+
+                // Array min_label = find_minimum_label(test);
+                // UtilityFunctions::print(min_label);
                 button = false;
             }
         }
@@ -527,7 +627,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         // find minimal label
         Array Universal_2D_Pathfinder::find_minimum_label(Array& open_list) {
             Array minimums = Array();
-            float min = 1.79769e308;
+            float min = 1.7e100;
             for (int i = 0; i < open_list.size(); i++) {
                 Vector2i coords = open_list[i];
                 float l =  Preprocessed_Map[coords.x][coords.y].Node_label;
@@ -684,5 +784,5 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
 
 Universal_2D_Pathfinder::Node_Data::Node_Data() {
-    Node_neighbors = Vector<Vector2i>();
+    Node_neighbors = Array();
 }

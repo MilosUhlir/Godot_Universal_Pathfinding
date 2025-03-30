@@ -7,16 +7,8 @@ texture = ExtResource("1_40mev")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 1:0/0 = 0
-1:0/0/custom_data_0 = 1
-1:0/0/custom_data_1 = true
 2:0/0 = 0
-2:0/0/custom_data_0 = 5
-2:0/0/custom_data_1 = true
 
 [resource]
 tile_size = Vector2i(64, 64)
-custom_data_layer_0/name = "tile_cost"
-custom_data_layer_0/type = 2
-custom_data_layer_1/name = "reachable"
-custom_data_layer_1/type = 1
 sources/0 = SubResource("TileSetAtlasSource_g5lb7")
