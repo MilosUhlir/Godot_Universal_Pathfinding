@@ -5,6 +5,56 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Build & Launch U2DP in Editor",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "C:/GITHUB/Godot_v4.3-stable_win64.exe",
+            "args":[
+                    "-e",
+                    "--path",
+                    "${workspaceFolder}\\demo",
+                    // "${workspaceFolder}\\demo\\main.tscn"
+                ],
+            "stopOnEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // "preLaunchTask": "build GDExtension"
+        },
+        {
+            "name": "Launch U2DP in Editor",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "C:/GITHUB/Godot_v4.3-stable_win64.exe",
+            "args":[
+                    "-e",
+                    "--path",
+                    "${workspaceFolder}\\demo",
+                    // "${workspaceFolder}\\demo\\main.tscn"
+                ],
+            "stopOnEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // "preLaunchTask": "build GDExtension"
+        },
+        {
             "name": "Build & Launch U2DP Demo",
             "type": "cppdbg",
             "request": "launch",
