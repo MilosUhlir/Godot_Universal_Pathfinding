@@ -16,6 +16,7 @@ def validate_parent_dir(key, val, env):
 
 libname = "Universal_2D_Pathfinder"
 projectdir = "Universal_2D_Pathfinder"
+# projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
@@ -114,7 +115,8 @@ library = env.SharedLibrary(
 #         source=sources,
 #     )
 
-copy = env.InstallAs("{}/bin/{}/{}lib{}".format(projectdir, env["platform"], filepath, file), library)
+copy = env.InstallAs("{}/bin/{}/{}{}".format(projectdir, env["platform"], filepath, file), library)
+# copy = env.InstallAs("{}/bin/{}An_{}".format(projectdir, filepath, file), library)
 
 default_args = [library, copy]
 if localEnv.get("compiledb", False):

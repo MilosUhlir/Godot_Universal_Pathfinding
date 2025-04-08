@@ -2,10 +2,7 @@
 #define UNIVERSAL_2D_PATHFINDER_H
 
 // Godot includes
-#include <godot_cpp/classes/node2d.hpp>
 #include <godot_cpp/classes/tile_map_layer.hpp>
-#include <godot_cpp/templates/list.hpp>
-#include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/classes/config_file.hpp>
 #include <godot_cpp/classes/file_access.hpp>
 
