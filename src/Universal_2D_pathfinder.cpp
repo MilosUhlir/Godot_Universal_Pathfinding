@@ -273,6 +273,11 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // Algorithms
         // A*
         Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
+            if (Preprocessed_Map.size() > 0) {
+                if (Preprocessed_Map[0].size() > 0) {
+                    map_initializer(2);
+                }
+            }
             OPEN_list.clear();
             CLOSED_list.clear();
             // map_initializer(2);
@@ -285,9 +290,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             // const Node_Data* first_node;
             // first_node = &Preprocessed_Map[start_x][start_y];
             OPEN_list.append(start_node);
-            UtilityFunctions::print("OPEN_list: ", OPEN_list);
+            // UtilityFunctions::print("OPEN_list: ", OPEN_list);
 
             if (OPEN_list.is_empty()) {
+                UtilityFunctions::print("A* exited with: OPEN array is empty");
                 return Array();
             };
             Label_Calculator(OPEN_list[0], end_node, true);
@@ -302,18 +308,18 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             Vector2i min;
             int iter = 1;
             while (exit_flag == false) {
-                UtilityFunctions::print("A* iteration: ", iter);
+                // UtilityFunctions::print("A* iteration: ", iter);
                 // if OPEN list is empty there is no solution -> terminate search
                 // if (OPEN_list.is_empty()) {
                 //     UtilityFunctions::print("A* exited with: OPEN array is empty");
                 //     return Array();
                 // };
 
-                UtilityFunctions::print("Open list: ", OPEN_list);
+                // UtilityFunctions::print("Open list: ", OPEN_list);
 
                 // pull node with the smallest f(i) value in OPEN, if multiple check if any is end node
                 Array mins = find_minimum_label(OPEN_list);
-                UtilityFunctions::print("minimums: ", mins);
+                // UtilityFunctions::print("minimums: ", mins);
                 if (mins.size() > 1) {
                     for (int i = 0; i < mins.size(); i++) {
                         if (mins[i] == end_node) {
@@ -327,11 +333,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 } else if (mins.size() == 1) {
                     min = mins[0];
                 } else {
+                    UtilityFunctions::print("A* exited with: No minimum found! After ", iter, " iterations");
                     break;
                 }
                 int idx = OPEN_list.find(min, 0);
                 current_node = OPEN_list.pop_at(idx);
-                UtilityFunctions::print("current_node: ", current_node, " end_node: ", end_node);
+                // UtilityFunctions::print("current_node: ", current_node, " end_node: ", end_node);
                 if (current_node == end_node) {
                     exit_flag = true;
                 }
@@ -339,15 +346,15 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 CLOSED_list.append(current_node);
 
                 // expanding neighbors
-                Array curr_node_data;
-                // UtilityFunctions::print("current node: ", current_node);
-                curr_node_data.clear();
-                curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_parent);
-                curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_cost);
-                curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Distance_to);
-                curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_label);
-                curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Reachable);
-                UtilityFunctions::print(curr_node_data);
+                // Array curr_node_data;
+                // // UtilityFunctions::print("current node: ", current_node);
+                // curr_node_data.clear();
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_parent);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_cost);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Distance_to);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_label);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Reachable);
+                // UtilityFunctions::print(curr_node_data);
                 // for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
                 //     UtilityFunctions::print("current node's neighbors: ", Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i]);
                 // }
@@ -396,11 +403,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 }
 
                 if (OPEN_list.is_empty()) {
-                    UtilityFunctions::print("A* exited with: OPEN array is empty");
+                    UtilityFunctions::print("A* exited with: OPEN array is empty! After ", iter, " iterations");
                     return Array();
                 }
                 
                 if (iter > 10000) {
+                    UtilityFunctions::print("A* exited with: Iteration limit reached");
                     break;
                 }
 
@@ -451,9 +459,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             //     iter++;
             // }
 
-            UtilityFunctions::print("A* finished");
-            UtilityFunctions::print("OPEN_list: ", OPEN_list);
-            UtilityFunctions::print("CLOSED_list: ", CLOSED_list);
+            UtilityFunctions::print("A* finished and found path in ", iter, " iterations");
+
+            // UtilityFunctions::print("OPEN_list: ", OPEN_list);
+            // UtilityFunctions::print("CLOSED_list: ", CLOSED_list);
             Array placeholder;
             placeholder.append(Vector2i(0,0));
             // return placeholder;
@@ -557,12 +566,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                             }
                     }
 
-                    Array list;
-                    list.clear();
-                    for (int i = 0; i < Preprocessed_Map[x][y].Node_neighbors.size(); i++) {
-                        list.append(Preprocessed_Map[x][y].Node_neighbors[i]);
-                    }
-                    UtilityFunctions::print("neighbors of ", Vector2i(x,y), ": ", list);
+                    // Array list;
+                    // list.clear();
+                    // for (int i = 0; i < Preprocessed_Map[x][y].Node_neighbors.size(); i++) {
+                    //     list.append(Preprocessed_Map[x][y].Node_neighbors[i]);
+                    // }
+                    // UtilityFunctions::print("neighbors of ", Vector2i(x,y), ": ", list);
                 }
             }
             UtilityFunctions::print("Preprocessor finished");
@@ -683,7 +692,11 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             return button;
         }
         void Universal_2D_Pathfinder::map_initializer(int type) {
-            Preprocessed_Map.clear();
+            
+            if (!(type == 2)) {
+                Preprocessed_Map.clear();
+            }
+            
             int size_x = map_size.x;
             int size_y = map_size.y;
 
@@ -731,9 +744,10 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     if (Preprocessed_Map[0].size() > 0) {
                         for (int x = 0; x < Preprocessed_Map.size(); x++) {
                             for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
-                                Preprocessed_Map.write[x].write[y].Node_neighbors.clear();
+                                // Preprocessed_Map.write[x].write[y].Node_neighbors.clear();
                                 Preprocessed_Map.write[x].write[y].Distance_to = 0;
                                 Preprocessed_Map.write[x].write[y].Node_label = 1e5;
+                                Preprocessed_Map.write[x].write[y].Node_parent = Vector2i(x,y);
                             }
                         }
                     }

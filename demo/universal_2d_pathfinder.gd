@@ -4,6 +4,9 @@ extends Universal_2D_Pathfinder
 @onready var target_marker = $"../target_marker"
 @onready var agent = $"../agent"
 var timer = Time
+var Paths: Array
+
+
 func _ready() -> void:
 	pass
 
@@ -19,9 +22,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		target_marker.set_position(map_to_local(mouse_pos))
 		print(mouse_pos)
 		var time_start = Time.get_ticks_usec()
-		var Paths = Pathfinder([local_to_map(agent.position)], [mouse_pos], false)
+		Paths = Pathfinder([local_to_map(agent.position)], [mouse_pos], false)[0]
 		var time_end = Time.get_ticks_usec()
 		print("Pathfinder finished in ", time_end-time_start, " µs")
-		print("Path: ", Paths[0])
-		agent.path = Paths[0]
+		print("Path length: ", Paths.size())
+		#print("Path: ", Paths[0])
+		agent.path = Paths
 	pass

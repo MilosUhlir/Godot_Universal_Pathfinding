@@ -12,8 +12,8 @@
             "args":[
                     "-e",
                     "--path",
-                    "${workspaceFolder}\\demo",
-                    // "${workspaceFolder}\\demo\\main.tscn"
+                    "${workspaceFolder}/demo",
+                    // "${workspaceFolder}/demo/main.tscn"
                 ],
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -26,7 +26,7 @@
                     "ignoreFailures": true
                 }
             ],
-            // "preLaunchTask": "build GDExtension"
+            "preLaunchTask": "build GDExtension"
         },
         {
             "name": "Launch U2DP in Editor",
@@ -36,8 +36,8 @@
             "args":[
                     "-e",
                     "--path",
-                    "${workspaceFolder}\\demo",
-                    // "${workspaceFolder}\\demo\\main.tscn"
+                    "${workspaceFolder}/demo",
+                    // "${workspaceFolder}/demo/main.tscn"
                 ],
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -60,8 +60,8 @@
             "args":[
                     // "-e",
                     "--path",
-                    "${workspaceFolder}\\demo",
-                    "${workspaceFolder}\\demo\\main.tscn"
+                    "${workspaceFolder}/demo",
+                    "${workspaceFolder}/demo/main.tscn"
                 ],
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -75,6 +75,23 @@
                 }
             ],
             "preLaunchTask": "build GDExtension"
+        },
+        {
+            "name": "Launch U2DP Demo.exe",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "Z:/Diplomova_Prace/Diplomka/2D_Pathfinder_Demo.exe",
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
 
     ]

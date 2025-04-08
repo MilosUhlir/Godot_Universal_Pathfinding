@@ -44,7 +44,7 @@ public:
 	void set_diagonal(const bool diag);
 	bool get_diagonal() const;
 
-	int MAX_PATH_LENGTH = 100;							// maximum possible length of path before pathfinder termination
+	int MAX_PATH_LENGTH = 10000;							// maximum possible length of path before pathfinder termination
 	
 	// PathDiversion;								// How far will the actual path be from the shortest path (in tiles?)
 

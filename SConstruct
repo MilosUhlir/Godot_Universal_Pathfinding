@@ -69,6 +69,13 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 # C:/GITHUB/GitHub_Main_Folder/Godot_Universal_Pathfinding/godot-cpp/SConstruct
 # godot-cpp/SConstruct
 env.Append(CPPPATH=["src/"])
+
+# debug = ARGUMENTS.get('debug', 0)
+# if int(debug):
+#     env.Append(CCFLAGS = ['/DEBUG'])
+
+
+
 sources = Glob("src/*.cpp")
 
 if env["target"] in ["editor", "template_debug"]:
