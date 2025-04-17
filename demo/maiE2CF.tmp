@@ -56,15 +56,18 @@ grow_horizontal = 0
 [node name="save_map_to_file" type="Button" parent="UI/VBoxContainer"]
 layout_mode = 2
 text = "Save map data to file"
+autowrap_mode = 3
 
 [node name="load_map_from_file" type="Button" parent="UI/VBoxContainer"]
 layout_mode = 2
 text = "Load map data from file"
+autowrap_mode = 3
 
-[node name="tile_placer_mode" type="CheckButton" parent="UI/VBoxContainer"]
+[node name="tile_placer_mode" type="Button" parent="UI/VBoxContainer"]
 layout_mode = 2
 text = "Tile place mode
 "
+autowrap_mode = 3
 
 [node name="tile" type="OptionButton" parent="UI/VBoxContainer"]
 layout_mode = 2
@@ -78,6 +81,7 @@ popup/item_2/id = 2
 [node name="switch_map_layout" type="Button" parent="UI/VBoxContainer"]
 layout_mode = 2
 text = "Switch map layout"
+autowrap_mode = 3
 
 [node name="map_type" type="OptionButton" parent="UI/VBoxContainer"]
 layout_mode = 2
@@ -87,25 +91,6 @@ popup/item_1/text = "Hexagonal"
 popup/item_1/id = 1
 popup/item_2/text = "Isometric"
 popup/item_2/id = 2
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="UI"]
-layout_mode = 1
-offset_left = 5.0
-offset_top = 5.0
-offset_right = 212.0
-offset_bottom = 635.0
-
-[node name="FPS" type="Label" parent="UI/VBoxContainer2"]
-layout_mode = 2
-text = "XX FPS"
-
-[node name="Pathfinder_time" type="Label" parent="UI/VBoxContainer2"]
-layout_mode = 2
-text = "last path search took ** µs"
-
-[node name="Path_length" type="Label" parent="UI/VBoxContainer2"]
-layout_mode = 2
-text = "last path length is ** tiles"
 
 [connection signal="pressed" from="UI/VBoxContainer/save_map_to_file" to="." method="Save_data_to_file"]
 [connection signal="pressed" from="UI/VBoxContainer/tile_placer_mode" to="." method="tile_placer_mode_switch"]

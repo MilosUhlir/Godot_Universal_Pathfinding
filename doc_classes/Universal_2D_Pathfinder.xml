@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Universal_2D_Pathfinder" inherits="TileMapLayer" experimental="This Class is under development. Bugs may ocur!" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
+		TileMapLayer Node extended with pathfinder. Supports A* and Dijkstra algorithms and several heuristic functions for weighted search.
 	</brief_description>
 	<description>
 	</description>
@@ -13,32 +14,85 @@
 			<param index="1" name="End_points_array" type="Array" />
 			<param index="2" name="debug" type="bool" />
 			<description>
+				The main method of this Node. it will find paths based on the number of input starting and end points, the selected Algorithm, Heuristic, diagonal mode and weight.
+			</description>
+		</method>
+		<method name="load_from_code">
+			<return type="void" />
+			<param index="0" name="data" type="Array" />
+			<description>
+				Loads an 2D [code]Array[/code] of map data into the internal variable of the Pathfinder.
+			</description>
+		</method>
+		<method name="load_from_file">
+			<return type="void" />
+			<param index="0" name="path_to_file" type="String" />
+			<description>
+				Loads an 2D [code]Array[/code] of map data from [code].cfg[/code] file into the internal variable of the Pathfinder.
+			</description>
+		</method>
+		<method name="load_tileset_cfg">
+			<return type="void" />
+			<param index="0" name="path_to_file" type="String" />
+			<description>
+				Loads custom tileset data from [code].cfg[/code] file into internal storage.
 			</description>
 		</method>
 		<method name="map_initializer">
 			<return type="void" />
+			<param index="0" name="_unnamed_arg0" type="int" />
 			<description>
+				Initializes internal memory storage for tile data.
+			</description>
+		</method>
+		<method name="save_to_code">
+			<return type="Array" />
+			<description>
+				Returns 2D [code]Array[/code] with internal data for each tile of the map.
+			</description>
+		</method>
+		<method name="save_to_file">
+			<return type="void" />
+			<param index="0" name="path_to_file" type="String" />
+			<param index="1" name="file_name" type="String" />
+			<description>
+				Saves map data into file in [code]user://[/code] directory.
+				[code]path_to_file[/code]: Default prefix for the path is [code]user://[/code]. Enter empty strin [code]""[/code] if you want the file to save directly into the root [code]user://[/code] directory.
+				If you want to enter folder path, first make sure that it exists in the [code]user://[/code] directory.
+				[code]file_name[/code]: Name of the data file.
 			</description>
 		</method>
 	</methods>
 	<members>
 		<member name="Algorithm" type="int" setter="set_Algorithm" getter="get_Algorithm" enum="Universal_2D_Pathfinder.Algorithm_Type" default="0">
+			An [code]enum[/code] with all available pathfinding algorithms. Default one is A*.
 		</member>
 		<member name="Heuristic" type="int" setter="set_Heuristic" getter="get_Heuristic" enum="Universal_2D_Pathfinder.Heuristic_Type" default="0">
+			An [code]enum[/code] with all available heuristic functions. Default one is Euclidean distance
 		</member>
-		<member name="Start_position" type="Vector2i" setter="set_Start_position" getter="get_Start_position" default="Vector2i(0, 0)">
+		<member name="Weight" type="int" setter="set_weight" getter="get_weight" default="1">
+			The weight of Heuristic. This will affect how much will the pathfimder depend on Heuristic.
+				1 - the Heuristic has the same weight as the distance from starting position.
+				10 - the Heuristic has 10 time the priority on the chosen path.
+			The result is dependent on the type of Heuristic chosen.
 		</member>
 		<member name="debug button" type="bool" setter="set_button" getter="get_button" default="false">
+			Debug button with prebuilt coordinates.
+		</member>
+		<member name="diagonal movement" type="bool" setter="set_diagonal" getter="get_diagonal" default="false">
+			Sets the usage of diagonals on square and isometric tilesets.
 		</member>
 		<member name="map_size" type="Vector2i" setter="set_map_size" getter="get_map_size" default="Vector2i(0, 0)">
-		</member>
-		<member name="storage array" type="Array" setter="set_storage_array" getter="get_storage_array" default="[]">
+			The size of map in tiles (NOT COORDINATES!).
+			If the tile in bottom right most corner has coordinates [code](19,9)[/code] the size should be [code](20,10)[/code].
 		</member>
 	</members>
 	<constants>
 		<constant name="ASTAR" value="0" enum="Algorithm_Type">
+			"Best first" search algorithm with cost function expanded by Heuristic function for better searching.
 		</constant>
 		<constant name="DIJKSTRA" value="1" enum="Algorithm_Type">
+			"Breath first" search algorithm with cost function expanded by Heuristic function for better searching.
 		</constant>
 		<constant name="EUCLID" value="0" enum="Heuristic_Type">
 			Euclidean distance.
@@ -59,6 +113,10 @@
 		<constant name="MANHATAN" value="4" enum="Heuristic_Type">
 			Manhatan distance is orthogonal distance folowing x and y axes
 			[code]h = x + y[/code]
+		</constant>
+		<constant name="CHEBYSHEV" value="5" enum="Heuristic_Type">
+		</constant>
+		<constant name="OCTILE" value="6" enum="Heuristic_Type">
 		</constant>
 	</constants>
 </class>

@@ -184,7 +184,7 @@ public:
 			// to godot
 			Array save_to_code();
 			// to .cfg file
-			void save_to_file(String path_to_file);
+			void save_to_file(String path_to_file, String file_name);
 
 			// map loaders
 			// from godot
@@ -207,8 +207,8 @@ public:
 
 
 			// Waypoints
-			void set_Waypoints(const std::vector<Vector2i> new_waypoints);
-			std::vector<Vector2i> get_Waypoints() const;
+			void set_Waypoints(const Array new_waypoints);
+			Array get_Waypoints() const;
 
 			// useWaypoints
 			void set_UseWaypoints(const bool new_UseWaypoints);
