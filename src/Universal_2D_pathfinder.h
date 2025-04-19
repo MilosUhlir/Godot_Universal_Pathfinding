@@ -217,6 +217,14 @@ public:
 			// HardEnd
 			void set_HardEnd(const Vector2i new_HardEnd);
 			Vector2i get_HardEnd() const;
+
+			// OPEN_list
+			void set_open_list(Array _open);
+			Array get_open_list();
+
+			// CLOSED_list
+			void set_closed_list(Array _closed);
+			Array get_closed_list();
 };
 
 }

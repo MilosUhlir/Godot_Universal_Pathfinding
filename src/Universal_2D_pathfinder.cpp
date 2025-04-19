@@ -70,6 +70,14 @@ void Universal_2D_Pathfinder::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_weight"), &Universal_2D_Pathfinder::set_weight);
     ClassDB::bind_method(D_METHOD("get_weight"), &Universal_2D_Pathfinder::get_weight);
     ADD_PROPERTY(PropertyInfo(Variant::INT, "Weight"), "set_weight", "get_weight");
+
+    ClassDB::bind_method(D_METHOD("set_open_list"), &Universal_2D_Pathfinder::set_open_list);
+    ClassDB::bind_method(D_METHOD("get_open_list"), &Universal_2D_Pathfinder::get_open_list);
+    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "OPEN_list"), "set_open_list", "get_open_list");
+
+    ClassDB::bind_method(D_METHOD("set_closed_list"), &Universal_2D_Pathfinder::set_closed_list);
+    ClassDB::bind_method(D_METHOD("get_closed_list"), &Universal_2D_Pathfinder::get_closed_list);
+    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "CLOSED_list"), "set_closed_list", "get_closed_list");
 }
 
 Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
@@ -121,7 +129,7 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
     tile_blue.append(5);
     tile_blue.append(true);
     tile_data[Vector2i(2,0)] = tile_blue;
-    UtilityFunctions::print("tile_data: ", tile_data);
+    // UtilityFunctions::print("tile_data: ", tile_data);
     
 
     // map_size = Vector2i(2,2);
@@ -140,7 +148,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // cleanup
     if (Engine::get_singleton()->is_editor_hint()) {
 
-        UtilityFunctions::print("Clean up message");
+        // UtilityFunctions::print("Clean up message");
         // // run preprocessor on scene close in editor
         // UtilityFunctions::print("storage_array.size(): ", storage_array.size());
         // UtilityFunctions::print("Preprocessed_Map.size(): ", Preprocessed_Map.size());
@@ -156,16 +164,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     }
 
 }
-
-
-// void Universal_2D_Pathfinder::_process(double delta) {
-//     time_passed += delta;
-//     Vector2 new_position = Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)));
-//     set_position(new_position);
-
-// }
-
-
 
 
 
@@ -298,39 +296,26 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // Algorithms
         // A*
         Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
-            
             if (Preprocessed_Map.size() > 0) {
                 if (Preprocessed_Map[0].size() > 0) {
                     map_initializer(2);
                 }
             }
 
-            
-
             OPEN_list.clear();
             CLOSED_list.clear();
-            // map_initializer(2);
 
             // put first node into OPEN, CLOSED is empty
             int start_x = start_node.x;
             int start_y = start_node.y;
-            // Vector<Node_Data> temp;
-
-            // const Node_Data* first_node;
-            // first_node = &Preprocessed_Map[start_x][start_y];
             OPEN_list.append(start_node);
-            // UtilityFunctions::print("OPEN_list: ", OPEN_list);
 
             if (OPEN_list.is_empty()) {
                 UtilityFunctions::print("A* exited with: OPEN array is empty");
                 return Array();
             };
+
             Label_Calculator(OPEN_list[0], end_node, true);
-            // UtilityFunctions::print("Node_coordinates: ", Preprocessed_Map[start_x][start_y].Node_coordinates);
-            // UtilityFunctions::print("Node_cost: ", Preprocessed_Map[start_x][start_y].Node_cost);
-            // UtilityFunctions::print("Node_label: ", Preprocessed_Map[start_x][start_y].Node_label);
-            // UtilityFunctions::print("Node_parent: ", Preprocessed_Map[start_x][start_y].Node_parent);
-            // UtilityFunctions::print("Reachable: ", Preprocessed_Map[start_x][start_y].Reachable);
             bool exit_flag = false;
             Vector2i previous_node;
             Vector2i current_node;
@@ -367,7 +352,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 }
                 int idx = OPEN_list.find(min, 0);
                 current_node = OPEN_list.pop_at(idx);
-                // UtilityFunctions::print("current_node: ", current_node, " end_node: ", end_node);
                 if (current_node == end_node) {
                     exit_flag = true;
                 }
@@ -411,22 +395,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     }
                 }
 
-                
-                
-                
-                
-                // if (CLOSED_list.has(end_node)) {
-                //     current_node = end_node;
-                // }
-                // Path.append(current_node);
-                // while (!(current_node == start_node)) {
-                //     current_node = Preprocessed_Map[current_node.x][current_node.y].Node_parent;
-                //     Path.append(current_node);
-                //     if (Path.size() >= MAX_PATH_LENGTH) {
-                //         break;
-                //     }
-                // }
-                
                 if (exit_flag == true) {
                     break;
                 }
@@ -501,7 +469,114 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         
         // Dijkstra
         Array Universal_2D_Pathfinder::Disjkstra_Pathfinder(Vector2i start_node, Vector2i end_node) {
-            return Array{};
+            if (Preprocessed_Map.size() > 0) {
+                if (Preprocessed_Map[0].size() > 0) {
+                    map_initializer(2);
+                }
+            }
+            
+            OPEN_list.clear();
+            CLOSED_list.clear();
+
+            // put first node into OPEN, CLOSED is empty
+            int start_x = start_node.x;
+            int start_y = start_node.y;
+            OPEN_list.append(start_node);
+
+            if (OPEN_list.is_empty()) {
+                UtilityFunctions::print("A* exited with: OPEN array is empty");
+                return Array();
+            };
+
+            Label_Calculator(OPEN_list[0], end_node, true);
+            bool exit_flag = false;
+            Vector2i previous_node;
+            Vector2i current_node;
+            Vector2i min;
+            int iter = 1;
+            while (exit_flag == false) {
+                // UtilityFunctions::print("A* iteration: ", iter);
+                // if OPEN list is empty there is no solution -> terminate search
+                // if (OPEN_list.is_empty()) {
+                //     UtilityFunctions::print("A* exited with: OPEN array is empty");
+                //     return Array();
+                // };
+
+                // UtilityFunctions::print("Open list: ", OPEN_list);
+
+                current_node = OPEN_list.pop_front();
+                if (current_node == end_node) {
+                    exit_flag = true;
+                }
+
+                CLOSED_list.append(current_node);
+
+                // expanding neighbors
+
+
+                for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
+                    Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
+                    bool open_has = OPEN_list.has(curr_nbr);
+                    bool closed_has = CLOSED_list.has(curr_nbr);
+                    double f_n = Label_Calculator(curr_nbr, end_node, false);
+                    if (open_has == true || closed_has == true) {
+                        if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Distance_to) {
+                            // Label_Calculator(curr_nbr, end_node, true);
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
+                            // if (closed_has && !open_has) {
+                            //     OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
+                            // }
+                        }
+                    } else if (open_has == false && closed_has == false) {
+                    //     double f_n = Label_Calculator(curr_nbr, end_node, true);
+                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
+                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
+                        OPEN_list.append(curr_nbr);
+                    }
+                }
+
+                if (exit_flag == true) {
+                    break;
+                }
+
+                if (OPEN_list.is_empty()) {
+                    UtilityFunctions::print("A* exited with: OPEN array is empty! After ", iter, " iterations");
+                    return Array();
+                }
+                
+                if (iter > 10000) {
+                    UtilityFunctions::print("A* exited with: Iteration limit reached");
+                    break;
+                }
+
+                iter++;
+            }
+
+            if (CLOSED_list.has(end_node)) {
+                current_node = end_node;
+            }
+            Path.append(current_node);
+            while (!(current_node == start_node)) {
+                current_node = Preprocessed_Map[current_node.x][current_node.y].Node_parent;
+                Path.append(current_node);
+                if (Path.size() >= MAX_PATH_LENGTH) {
+                    break;
+                }
+            }
+
+            
+
+            UtilityFunctions::print("A* finished and found path in ", iter, " iterations");
+
+            
+            Array placeholder;
+            placeholder.append(Vector2i(0,0));
+            // return placeholder;
+            return Path;
+
+
+            return Array();
         }
 
 
@@ -672,7 +747,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 return 0.0;
             } else {
                 double f_n;
-                f_n = parent_distance + cost + h;
+                if (Algorithm == Algorithm_Type::ASTAR) {
+                    f_n = parent_distance + cost + h;
+                } else if (Algorithm == Algorithm_Type::DIJKSTRA)
+                {
+                    f_n = parent_distance + cost;
+                }
                 return f_n;
             }
         }
@@ -827,7 +907,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                             for (Vector2i n : Preprocessed_Map[x][y].Node_neighbors) {
                                 neighbors.append(n);
                             }
-                            storage["neighbors"] = neighbors;
+                            storage["neighbors"] = neighbors.duplicate();
                             storage["cost"] = Preprocessed_Map[x][y].Node_cost;
                             storage["distance_to"] = Preprocessed_Map[x][y].Distance_to;
                             storage["state"] = Preprocessed_Map[x][y].Reachable;
@@ -849,6 +929,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
             
             storage_array.clear();
+            storage.clear();
             Array storage_array_y;
             Array neighbors;
             if (Preprocessed_Map.size() > 0) {
@@ -863,7 +944,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                             for (Vector2i n : Preprocessed_Map[x][y].Node_neighbors) {
                                 neighbors.append(n);
                             }
-                            storage["neighbors"] = neighbors;
+                            storage["neighbors"] = neighbors.duplicate();
                             storage["cost"] = Preprocessed_Map[x][y].Node_cost;
                             storage["distance_to"] = Preprocessed_Map[x][y].Distance_to;
                             storage["state"] = Preprocessed_Map[x][y].Reachable;
@@ -908,7 +989,14 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             String full_path = "user://" + path_to_file + "//" + file_name + ".cfg";
             // UtilityFunctions::print("file path: ", full_path);
             // saver->save(full_path);
-            ERR_FAIL_COND(saver->save(full_path) != godot::Error::OK);
+            Error save_state;
+            save_state = saver->save(full_path);
+            // ERR_FAIL_COND(saver->save(full_path) != godot::Error::OK);
+            if (save_state == Error::OK) {
+                UtilityFunctions::print("Seccesfully saved");
+            } else {
+                UtilityFunctions::print("Error saving data to file!");
+            }
             return;
         }
 
@@ -1122,6 +1210,21 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         return HardEnd;
     }
 
+    // OPEN_list
+    void Universal_2D_Pathfinder::set_open_list(Array _open) {
+        OPEN_list = _open;
+    }
+    Array Universal_2D_Pathfinder::get_open_list() {
+        return OPEN_list;
+    }
+
+    // CLOSED_list
+    void Universal_2D_Pathfinder::set_closed_list(Array _closed) {
+        CLOSED_list = _closed;
+    }
+    Array Universal_2D_Pathfinder::get_closed_list() {
+        return CLOSED_list;
+    }
 
 
 Universal_2D_Pathfinder::Node_Data::Node_Data() {

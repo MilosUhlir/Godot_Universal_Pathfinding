@@ -7,15 +7,19 @@ extends Node2D
 @onready var tileset_hex:TileSet = preload("res://tile_sets/set/hex_tile_set.tres")
 @onready var tileset_iso:TileSet = preload("res://tile_sets/set/iso_tile_set.tres")
 
+@onready var green_tile = $UI/Tile_placement_UI/GridContainer/green_tile
+@onready var blue_tile = $UI/Tile_placement_UI/GridContainer/blue_tile
+@onready var red_tile = $UI/Tile_placement_UI/GridContainer/red_tile
+
 # Variables to track FPS
 var current_fps:float = 0
 var min_fps:float = INF
 var max_fps:float = 0
-var avg_fps:float = 0
-var fps_history:Array = []
 
 var Paths: Array
 var tile_placement_mode:bool = false
+
+enum tile_type {green, blue, red, none}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -37,7 +41,7 @@ func _process(delta: float) -> void:
 	# Update min/max FPS
 	min_fps = min(min_fps, current_fps)
 	max_fps = max(max_fps, current_fps)
-	$UI/VBoxContainer2/FPS.text = str(current_fps) + " FPS"
+	$UI/stat_display/FPS.text = str(current_fps) + " FPS"
 
 func _unhandled_input(event: InputEvent) -> void:
 	if tile_placement_mode == false:
@@ -65,19 +69,27 @@ func _unhandled_input(event: InputEvent) -> void:
 				#print("Path: ", Paths[0])
 				agent.path = path
 				#storage_array = save_to_code()
-				$UI/VBoxContainer2/Pathfinder_time.text = "last path search took " + str(time_delta) + unit
-				$UI/VBoxContainer2/Path_length.text = "last path length is " + str(path.size()) + " tiles"
+				$UI/stat_display/Pathfinder_time.text = "last path search took " + str(time_delta) + unit
+				$UI/stat_display/Path_length.text = "last path length is " + str(path.size()) + " tiles"
 				
 	else:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_released():
 			var mouse_pos:Vector2i = pathfinder.local_to_map(get_local_mouse_position())
-			var tile:int = $UI/VBoxContainer/tile.selected
-			var tile_type: Vector2i
-			match tile:
-				0: tile_type = Vector2i(0,0)
-				1: tile_type = Vector2i(1,0)
-				2: tile_type = Vector2i(2,0)
-			print("tile: ", tile)
+			var tile: Vector2i
+			match tile_type:
+				0: tile = Vector2i(1,0)
+				1: tile = Vector2i(2,0)
+				2: tile = Vector2i(0,0)
+				3: return
+			
+			if green_tile.toggled == true:
+				tile = Vector2i(1,0)
+			elif blue_tile.toggled == true:
+				tile = Vector2i(2,0)
+			elif red_tile.toggled == true:
+				tile = Vector2i(0,0)
+			
+			#print("tile: ", tile)
 			pathfinder.set_cell(mouse_pos, 0, tile_type)
 			pass
 		pass
@@ -91,10 +103,12 @@ func Save_data_to_file() -> void:
 
 func tile_placer_mode_switch() -> void:
 	tile_placement_mode = !tile_placement_mode
+	$UI/Main_UI.visible = !$UI/Main_UI.visible
+	$UI/Tile_placement_UI.visible = !$UI/Tile_placement_UI.visible
 	pass
 
 func switch_map_layout() -> void:
-	var selected_layout:int = $UI/VBoxContainer/map_type.selected
+	var selected_layout:int = $UI/Main_UI/map_type.selected
 	match selected_layout:
 		0: pathfinder.tile_set = tileset_sqr
 		1: pathfinder.tile_set = tileset_hex
@@ -119,3 +133,39 @@ func _notification(what):
 		config.set_value("fps", "min", min_fps)
 		config.set_value("fps", "max", max_fps)
 		var err = config.save("user://fps_config.cfg")
+
+
+func _on_green_tile_pressed() -> void:
+	if green_tile.toggled == false:
+		green_tile.toggled = true
+		blue_tile.toggled = false
+		red_tile.toggled = false
+	else:
+		green_tile.toggled = false
+		blue_tile.toggled = true
+		red_tile.toggled = true
+	pass # Replace with function body.
+
+
+func _on_blue_tile_pressed() -> void:
+	if green_tile.toggled == false:
+		green_tile.toggled = false
+		blue_tile.toggled = true
+		red_tile.toggled = false
+	else:
+		green_tile.toggled = true
+		blue_tile.toggled = false
+		red_tile.toggled = true
+	pass # Replace with function body.
+
+
+func _on_red_tile_pressed() -> void:
+	if green_tile.toggled == false:
+		green_tile.toggled = false
+		blue_tile.toggled = false
+		red_tile.toggled = true
+	else:
+		green_tile.toggled = true
+		blue_tile.toggled = true
+		red_tile.toggled = false
+	pass # Replace with function body.
