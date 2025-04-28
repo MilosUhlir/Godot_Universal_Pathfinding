@@ -21,6 +21,10 @@ void Universal_2D_Pathfinder::_bind_methods() {
     ClassDB::bind_method(D_METHOD("load_from_file", "path_to_file"), &Universal_2D_Pathfinder::load_from_file);
     
     ClassDB::bind_method(D_METHOD("load_tileset_cfg", "path_to_file"), &Universal_2D_Pathfinder::load_tileset_cfg);
+    
+    // map initializer and preprocessor
+    ClassDB::bind_method(D_METHOD("map_initializer"), &Universal_2D_Pathfinder::map_initializer);
+    ClassDB::bind_method(D_METHOD("Preprocessor"), &Universal_2D_Pathfinder::Preprocessor);
 
     // add propperties
 
@@ -57,8 +61,6 @@ void Universal_2D_Pathfinder::_bind_methods() {
     BIND_ENUM_CONSTANT(CHEBYSHEV);
     BIND_ENUM_CONSTANT(OCTILE);
     
-    // map initializer
-    ClassDB::bind_method(D_METHOD("map_initializer"), &Universal_2D_Pathfinder::map_initializer);
     ClassDB::bind_method(D_METHOD("set_button"), &Universal_2D_Pathfinder::set_button);
     ClassDB::bind_method(D_METHOD("get_button"), &Universal_2D_Pathfinder::get_button);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug button"), "set_button", "get_button");
@@ -378,7 +380,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     bool open_has = OPEN_list.has(curr_nbr);
                     bool closed_has = CLOSED_list.has(curr_nbr);
                     
-                    bool diag;
+                    bool diag = false;
                     if (i > 3) {
                         diag = true;
                     } else {
@@ -720,7 +722,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             double cost = Preprocessed_Map[_node.x][_node.y].Node_cost;
             double cost_mod = 0;
             if (is_tile_diagonal == true) {
-                cost = cost * sqrt(2);
+                cost = cost + sqrt(2);
             } else {
                 cost += 0;
             }
