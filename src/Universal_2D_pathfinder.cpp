@@ -177,11 +177,11 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
         storage["coordinates"] = Vector2i(0,0);
         storage["parent"] = Vector2i(0,0);
-        storage["neighbors"] = Array{};
-        storage["cost"] = 0;
-        storage["distance_to"] = 0;
-        storage["state"] = 0;
-        storage["label"] = 0.0;
+        storage["neighbors"] = Array();
+        storage["cost"] = float(0);
+        storage["distance_to"] = float(0);
+        storage["state"] = bool(false);
+        storage["label"] = float(0);
         return;
     }
 
@@ -315,7 +315,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 return Array();
             };
 
-            Label_Calculator(OPEN_list[0], end_node, true);
+            Label_Calculator(OPEN_list[0], end_node, false, true);
             bool exit_flag = false;
             Vector2i previous_node;
             Vector2i current_node;
@@ -377,10 +377,19 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
                     bool open_has = OPEN_list.has(curr_nbr);
                     bool closed_has = CLOSED_list.has(curr_nbr);
-                    double f_n = Label_Calculator(curr_nbr, end_node, false);
+                    
+                    bool diag;
+                    if (i > 3) {
+                        diag = true;
+                    } else {
+                        diag = false;
+                    }
+                    double f_n = Label_Calculator(curr_nbr, end_node, diag, false);
+                    // double f_n;
                     if (open_has == true || closed_has == true) {
                         if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Node_label) {
                             // Label_Calculator(curr_nbr, end_node, true);
+                            f_n = Label_Calculator(curr_nbr, end_node, diag, false);
                             Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = f_n;
                             Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
                             if (closed_has && !open_has) {
@@ -389,6 +398,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                         }
                     } else if (open_has == false && closed_has == false) {
                     //     double f_n = Label_Calculator(curr_nbr, end_node, true);
+                        f_n = Label_Calculator(curr_nbr, end_node, diag, false);
                         Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = f_n;
                         Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
                         OPEN_list.append(curr_nbr);
@@ -488,7 +498,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 return Array();
             };
 
-            Label_Calculator(OPEN_list[0], end_node, true);
+            Label_Calculator(OPEN_list[0], end_node, false, true);
             bool exit_flag = false;
             Vector2i previous_node;
             Vector2i current_node;
@@ -518,7 +528,13 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
                     bool open_has = OPEN_list.has(curr_nbr);
                     bool closed_has = CLOSED_list.has(curr_nbr);
-                    double f_n = Label_Calculator(curr_nbr, end_node, false);
+                    bool diag;
+                    if (i >= 4) {
+                        diag = true;
+                    } else {
+                        diag = false;
+                    }
+                    double f_n = Label_Calculator(curr_nbr, end_node, diag, false);
                     if (open_has == true || closed_has == true) {
                         if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Distance_to) {
                             // Label_Calculator(curr_nbr, end_node, true);
@@ -699,11 +715,17 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // Helper methods
         // label calculation
-        double Universal_2D_Pathfinder::Label_Calculator(Vector2i _node, Vector2i end, bool overwrite) {
+        double Universal_2D_Pathfinder::Label_Calculator(Vector2i _node, Vector2i end, bool is_tile_diagonal, bool overwrite) {
             Vector2i coords = Preprocessed_Map[_node.x][_node.y].Node_coordinates;
-            int cost = Preprocessed_Map[_node.x][_node.y].Node_cost;
+            double cost = Preprocessed_Map[_node.x][_node.y].Node_cost;
+            double cost_mod = 0;
+            if (is_tile_diagonal == true) {
+                cost = cost * sqrt(2);
+            } else {
+                cost += 0;
+            }
             Vector2i parent = Preprocessed_Map[_node.x][_node.y].Node_parent;
-            float parent_distance;
+            double parent_distance;
             if (parent == coords) {
                 parent_distance = 0;
             } else {
@@ -742,16 +764,16 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 break;
             }
             if (overwrite == true) {
-                Preprocessed_Map.write[_node.x].write[_node.y].Distance_to = parent_distance + cost;
-                Preprocessed_Map.write[_node.x].write[_node.y].Node_label = parent_distance + cost + h;
+                Preprocessed_Map.write[_node.x].write[_node.y].Distance_to = parent_distance + cost + cost_mod;
+                Preprocessed_Map.write[_node.x].write[_node.y].Node_label = parent_distance + cost + cost_mod + h;
                 return 0.0;
             } else {
                 double f_n;
                 if (Algorithm == Algorithm_Type::ASTAR) {
-                    f_n = parent_distance + cost + h;
+                    f_n = parent_distance + cost + cost_mod + h;
                 } else if (Algorithm == Algorithm_Type::DIJKSTRA)
                 {
-                    f_n = parent_distance + cost;
+                    f_n = parent_distance + cost + cost_mod;
                 }
                 return f_n;
             }

@@ -23,13 +23,6 @@ enum tile_type {green, blue, red, none}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	
-	# Load saved FPS data if available
-	var config = ConfigFile.new()
-	var err = config.load("user://fps_config.cfg")
-	if err == OK:
-		min_fps = config.get_value("fps", "min", INF)
-		max_fps = config.get_value("fps", "max", 0)
 	pass # Replace with function body.
 
 
@@ -42,6 +35,7 @@ func _process(delta: float) -> void:
 	min_fps = min(min_fps, current_fps)
 	max_fps = max(max_fps, current_fps)
 	$UI/stat_display/FPS.text = str(current_fps) + " FPS"
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if tile_placement_mode == false:
@@ -64,9 +58,9 @@ func _unhandled_input(event: InputEvent) -> void:
 					unit = " ms"
 				else:
 					unit = " µs"
-				#print("Pathfinder finished in ", time_delta, unit) #" ms")
-				#print("Path length: ", path.size())
-				#print("Path: ", Paths[0])
+				print("Pathfinder finished in ", time_delta, unit) #" ms")
+				print("Path length: ", path.size())
+				print("Path: ", path)
 				agent.path = path
 				#storage_array = save_to_code()
 				$UI/stat_display/Pathfinder_time.text = "last path search took " + str(time_delta) + unit
@@ -94,6 +88,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			pass
 		pass
 
+
 func Save_data_to_file() -> void:
 	
 	print("saving...")
@@ -101,11 +96,13 @@ func Save_data_to_file() -> void:
 	pathfinder.save_to_file("", "map_1")
 	pass
 
+
 func tile_placer_mode_switch() -> void:
 	tile_placement_mode = !tile_placement_mode
 	$UI/Main_UI.visible = !$UI/Main_UI.visible
 	$UI/Tile_placement_UI.visible = !$UI/Tile_placement_UI.visible
 	pass
+	
 
 func switch_map_layout() -> void:
 	var selected_layout:int = $UI/Main_UI/map_type.selected
@@ -114,16 +111,17 @@ func switch_map_layout() -> void:
 		1: pathfinder.tile_set = tileset_hex
 		2: pathfinder.tile_set = tileset_iso
 
+
 func UI_visibility() -> void:
 	$UI.visible = !($UI.visible)
 	#pathfinder.load_tileset_cfg("res://tile_sets/config/square_config.cfg")
 	#pathfinder.load_from_file("user://map_1.cfg")
 	pass
 
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_released("UI_hide_show"):
 		UI_visibility()
-
 
 
 func _notification(what):

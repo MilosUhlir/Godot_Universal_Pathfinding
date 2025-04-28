@@ -74,8 +74,8 @@ public:
 		Vector2i Node_coordinates = Vector2i(0,0);		// map coordinates of current node
 		Vector2i Node_parent = Vector2i(0,0);			// parent node of the current one
 		Vector<Vector2i> Node_neighbors;				// array of coordinates of neighboring nodes
-		int Node_cost = 0;								// cost of movement onto this node - user defined from cfg file
-		int Distance_to = 0;						// current distance from start to this point g(n)
+		double Node_cost = 0;								// cost of movement onto this node - user defined from cfg file
+		double Distance_to = 0;						// current distance from start to this point g(n)
 		double Node_label = 1e5;						// the total cost to reach this node from start point f(n) = g(n) = h(n)
 		bool Reachable = false;							// if node can be reached - user defined from cfg file
 		Node_Data();
@@ -162,7 +162,7 @@ public:
 
 		// Helper methods
 			// label calculation
-			double Label_Calculator(Vector2i node, Vector2i end, bool overwrite);
+			double Label_Calculator(Vector2i node, Vector2i end, bool is_tile_diagonal, bool overwrite);
 			
 			// neighbor search
 
