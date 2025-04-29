@@ -74,8 +74,8 @@ public:
 		Vector2i Node_coordinates = Vector2i(0,0);		// map coordinates of current node
 		Vector2i Node_parent = Vector2i(0,0);			// parent node of the current one
 		Vector<Vector2i> Node_neighbors;				// array of coordinates of neighboring nodes
-		float Node_cost = 0;								// cost of movement onto this node - user defined from cfg file
-		float Distance_to = 0;						// current distance from start to this point g(n)
+		double Node_cost = 0;								// cost of movement onto this node - user defined from cfg file
+		double Distance_to = 0;						// current distance from start to this point g(n)
 		double Node_label = 1e5;						// the total cost to reach this node from start point f(n) = g(n) = h(n)
 		bool Reachable = false;							// if node can be reached - user defined from cfg file
 		Node_Data();
@@ -151,38 +151,47 @@ public:
 		// Algorithms
 			// A*
 			Array AStar_Pathfinder(Vector2i start_node, Vector2i end_node);
+
+			// Dynamic Programming
+			Array DP_Pathfinder(Vector2i start_node, Vector2i end_node);
 			
 			// Dijkstra
 			Array Disjkstra_Pathfinder(Vector2i start_node, Vector2i end_node);
 			
-			// Dynamic Programming
-			Array DP_Pathfinder(Vector2i start_node, Vector2i end_node);
+			// other...
 
 		// Helper methods
 			// label calculation
 			double Label_Calculator(Vector2i node, Vector2i end, bool is_tile_diagonal, bool overwrite);
+			
+			// neighbor search
+
 
 			// Map initializer
-			void map_initializer(int type);
 			bool button;
+			void map_initializer(int type);
 			void set_button(bool but);
 			bool get_button();
+
+
+
 
 			// find minimal label
 			Array find_minimum_label(Array& open_list);
 
 		// file management
 			// map savers
-				// to godot
-				Array save_to_code();
-				// to .cfg file
-				void save_to_file(String path_to_file, String file_name);
+			// to godot
+			Array save_to_code();
+			// to .cfg file
+			void save_to_file(String path_to_file, String file_name);
 
 			// map loaders
-				// from godot
-				void load_from_code(Array data);
-				// from .cfg file
-				void load_from_file(String path_to_file);
+			// from godot
+			void load_from_code(Array data);
+			// from .cfg file
+			void load_from_file(String path_to_file);
+
 
 			// load tileset cfg
 			void load_tileset_cfg(String path_to_file);
@@ -194,6 +203,20 @@ public:
 			void set_MAX_PATH_LENGTH(const int new_max_length);
 			int get_MAX_PATH_LENGTH() const;
 
+			// path diversion
+
+
+			// Waypoints
+			void set_Waypoints(const Array new_waypoints);
+			Array get_Waypoints() const;
+
+			// useWaypoints
+			void set_UseWaypoints(const bool new_UseWaypoints);
+			bool get_UseWaypoints() const;
+
+			// HardEnd
+			void set_HardEnd(const Vector2i new_HardEnd);
+			Vector2i get_HardEnd() const;
 
 			// OPEN_list
 			void set_open_list(Array _open);

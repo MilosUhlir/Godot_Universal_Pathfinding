@@ -38,6 +38,7 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if tile_placement_mode == false:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_released():
+			pathfinder.map_initializer(0);
 			pathfinder.Preprocessor()
 			var mouse_pos = pathfinder.local_to_map(get_local_mouse_position())
 			target_marker.set_position(pathfinder.map_to_local(mouse_pos))
@@ -139,3 +140,7 @@ func _on_red_tile_pressed() -> void:
 	else:
 		tile = Vector2i(-1,-1)
 	pass # Replace with function body.
+
+
+func _on_load_tile_cfg_pressed() -> void:
+	pathfinder.load_tileset_cfg("res://tile_sets/config/square_config.cfg")

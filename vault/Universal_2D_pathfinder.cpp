@@ -131,7 +131,16 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
     tile_blue.append(5);
     tile_blue.append(true);
     tile_data[Vector2i(2,0)] = tile_blue;
+    // UtilityFunctions::print("tile_data: ", tile_data);
+    
+
+    // map_size = Vector2i(2,2);
+
+    // Universal_2D_Pathfinder::map_initializer();
+
+    // UtilityFunctions::print("map size: ", Preprocessed_Map.size(),"x",Preprocessed_Map[0].size());
     map_initializer(0);
+    map_initializer(1);
     Preprocessor();
 
 }
@@ -181,6 +190,8 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // Pathfinder
     Array Universal_2D_Pathfinder::Pathfinder(Array Start_points_array, Array End_points_array, const bool debug) {
+        
+
         for (int i =0; i < Start_points_array.size(); i++) {
             Vector2i pos = Start_points_array[i];
             if (pos.x < 0 || pos.y < 0 || pos.x >= map_size.x || pos.y >= map_size.y) {
@@ -188,9 +199,16 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 return Array();
             }
         }
+
+
+
         Map_tileset = *get_tile_set();
         TileSet::TileShape current_tileset = Map_tileset->get_tile_shape();
         TileSet::TileShape last_used_tileset;
+        
+        
+        
+        
         if (Preprocessed_Map.size() < 1) {
             last_used_tileset = Map_tileset->get_tile_shape();
             map_initializer(0);
@@ -325,7 +343,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                             min = mins[i];
                             break;
                         } else {
-                            min = mins.back();
+                            min = mins[0];
                         }
                     }
                 } else if (mins.size() == 1) {
@@ -1115,28 +1133,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             }
             Array sections = file_manager->get_sections();
             UtilityFunctions::print(sections);
-
-            Array tile;
-            tile_data.clear();
-            for (int i = 0; i < sections.size(); i++) {
-                if (sections[i] != "tileset_data") {
-                    tile.clear();
-                    String value = sections[i];
-                    Array parts = value.split(",");
-                    Vector2i tile_key = Vector2i(int(parts[0]),int(parts[1]));
-                    String name = file_manager->get_value(sections[i],"tile_name");
-                    tile.append(name);
-                    int cost = file_manager->get_value(sections[i],"tile_cost");
-                    tile.append(cost);
-                    bool reach = file_manager->get_value(sections[i],"reachable_state");
-                    tile.append(reach);
-                    tile_data[tile_key] = tile.duplicate();
-                }
-            }
-            UtilityFunctions::print(tile_data);
-
-
-
             return;
         }
 
@@ -1192,6 +1188,15 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         return map_size;
     }
 
+
+    // storage array
+    // void Universal_2D_Pathfinder::set_storage_array(Array sta) {
+    //     storage_array = sta;
+    // }
+    // Array Universal_2D_Pathfinder::get_storage_array() {
+    //     return storage_array;
+    // }
+
 /*
     // MAX_PATH_LENGTH
     void Universal_2D_Pathfinder::set_MAX_PATH_LENGTH(const int new_max_length) {
@@ -1201,7 +1206,33 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         return MAX_PATH_LENGTH;
     }
 
+    // path diversion
+    
     */
+
+	// Waypoints
+	void Universal_2D_Pathfinder::set_Waypoints(const Array new_waypoints) {
+        Waypoints = new_waypoints;
+    }
+	Array Universal_2D_Pathfinder::get_Waypoints() const {
+        return Waypoints;
+    }
+
+	// useWaypoints
+	void Universal_2D_Pathfinder::set_UseWaypoints(const bool new_UseWaypoints) {
+        UseWaypoints = new_UseWaypoints;
+    }
+	bool Universal_2D_Pathfinder::get_UseWaypoints() const {
+        return UseWaypoints;
+    }
+
+	// HardEnd
+	void Universal_2D_Pathfinder::set_HardEnd(const Vector2i new_HardEnd) {
+        HardEnd = new_HardEnd;
+    }
+	Vector2i Universal_2D_Pathfinder::get_HardEnd() const {
+        return HardEnd;
+    }
 
     // OPEN_list
     void Universal_2D_Pathfinder::set_open_list(Array _open) {
