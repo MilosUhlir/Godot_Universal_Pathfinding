@@ -25,7 +25,8 @@ func random_maze() -> void:
 			if prob > 0.80:
 				set_cell(Vector2i(x,y), 0, Vector2i(0,0))
 			pass
-	
+	map_initializer(0)
+	Preprocessor()
 	
 	
 	pass

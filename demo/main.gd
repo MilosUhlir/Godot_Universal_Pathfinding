@@ -26,6 +26,8 @@ enum tile_type {green, blue, red, none}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	pathfinder.map_initializer(0)
+	pathfinder.Preprocessor()
 	pass
 
 
@@ -38,8 +40,8 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if tile_placement_mode == false:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_released():
-			pathfinder.map_initializer(0);
-			pathfinder.Preprocessor()
+			#pathfinder.map_initializer(0);
+			#pathfinder.Preprocessor()
 			var mouse_pos = pathfinder.local_to_map(get_local_mouse_position())
 			target_marker.set_position(pathfinder.map_to_local(mouse_pos))
 			print(mouse_pos)
@@ -93,11 +95,13 @@ func tile_placer_mode_switch() -> void:
 	
 
 func switch_map_layout() -> void:
-	var selected_layout:int = $CanvasLayer/UI/Main_UI/map_type.selected
+	var selected_layout:int = $CanvasLayer/UI/Tile_placement_UI/map_type.selected
 	match selected_layout:
 		0: pathfinder.tile_set = tileset_sqr
 		1: pathfinder.tile_set = tileset_hex
 		2: pathfinder.tile_set = tileset_iso
+	pathfinder.map_initializer(0)
+	pathfinder.Preprocessor()
 
 
 func UI_visibility() -> void:
@@ -144,3 +148,11 @@ func _on_red_tile_pressed() -> void:
 
 func _on_load_tile_cfg_pressed() -> void:
 	pathfinder.load_tileset_cfg("res://tile_sets/config/square_config.cfg")
+
+
+func _on_algorithm_item_selected(index: int) -> void:
+	pathfinder.Algorithm = index
+
+
+func _on_heuristic_item_selected(index: int) -> void:
+	pathfinder.Heuristic = index

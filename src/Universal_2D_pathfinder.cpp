@@ -216,9 +216,9 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             case 1:
                 algorithm = &Universal_2D_Pathfinder::Disjkstra_Pathfinder;
                 break;
-            // case 2:
-            //     algorithm = &Universal_2D_Pathfinder::DP_Pathfinder;
-            //     break;
+            case 2:
+                algorithm = &Universal_2D_Pathfinder::DP_Pathfinder;
+                break;
         }
 
         // one to one path
@@ -582,6 +582,40 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
         // Dynamic Programming
         Array Universal_2D_Pathfinder::DP_Pathfinder(Vector2i start_node, Vector2i end_node) {
+            // For DP Nodes parent is going to be its child
+            
+            bool map_ready;
+            
+            if (Preprocessed_Map.size() > 0) {
+                if (Preprocessed_Map[0].size() > 0) {
+                    map_initializer(2);
+                }
+            }
+
+            if (!map_ready) {
+                bool update;
+                for (int i = 0; i < 100000; i++) {
+                    if (update == false) {
+                        break;
+                    }
+
+                    for (int x = 0; x < Preprocessed_Map.size(); x++) {
+                        for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
+                            
+                        }
+                    }
+
+                }
+
+
+                map_ready = true;
+            }
+
+
+            
+
+
+            
             return Array{};
         }
 
