@@ -46,10 +46,29 @@ func _unhandled_input(event: InputEvent) -> void:
 			target_marker.set_position(pathfinder.map_to_local(mouse_pos))
 			print(mouse_pos)
 			var time_start = Time.get_ticks_usec()
-			var starts = [pathfinder.local_to_map(agent.position)]
-			var ends = [mouse_pos]
+			var starts: Array
+			var ends: Array
+			if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
+				var target = Vector2i(2,2)
+				pathfinder.set_cell(target, 0, Vector2i(1,0))
+				starts = [pathfinder.local_to_map(mouse_pos)]
+				ends = [target]
+				agent.velocity = Vector2(0,0)
+				agent.current_tile = pathfinder.map_to_local(mouse_pos)
+				agent.position = pathfinder.map_to_local(mouse_pos)
+				agent._ready()
+			else:
+				starts = [pathfinder.local_to_map(agent.position)]
+				ends = [mouse_pos]
 			Paths.clear()
-			Paths = pathfinder.Pathfinder(starts, ends, false)
+			if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
+				if FileAccess.file_exists("user://DP_data"):
+					pathfinder.load_from_file("user://DP_data")
+				else:
+					Paths = pathfinder.Pathfinder(starts, ends, false)
+					pathfinder.save_to_file("", "DP_data")
+			else:
+				Paths = pathfinder.Pathfinder(starts, ends, false)
 			if Paths.size() > 0:
 				$Drawing_node.Paths = Paths
 				var path = Paths[0]
@@ -91,7 +110,8 @@ func tile_placer_mode_switch() -> void:
 	tile_placement_mode = !tile_placement_mode
 	$CanvasLayer/UI/Main_UI.visible = !$CanvasLayer/UI/Main_UI.visible
 	$CanvasLayer/UI/Tile_placement_UI.visible = !$CanvasLayer/UI/Tile_placement_UI.visible
-	pass
+	pathfinder.map_initializer(0)
+	pathfinder.Preprocessor()
 	
 
 func switch_map_layout() -> void:
@@ -101,7 +121,6 @@ func switch_map_layout() -> void:
 		1: pathfinder.tile_set = tileset_hex
 		2: pathfinder.tile_set = tileset_iso
 	pathfinder.map_initializer(0)
-	pathfinder.Preprocessor()
 
 
 func UI_visibility() -> void:
@@ -156,3 +175,16 @@ func _on_algorithm_item_selected(index: int) -> void:
 
 func _on_heuristic_item_selected(index: int) -> void:
 	pathfinder.Heuristic = index
+
+
+func _on_diagonal_movement_toggled(toggled_on: bool) -> void:
+	pathfinder.diagonal_movement = toggled_on
+	pathfinder.map_initializer(2)
+	pathfinder.Preprocessor()
+
+
+func _on_clear_map_pressed() -> void:
+	for x in range(0, pathfinder.map_size.x):
+		for y in range(0, pathfinder.map_size.y):
+			pathfinder.set_cell(Vector2i(x,y), 0, Vector2i(1,0))
+	pass # Replace with function body.

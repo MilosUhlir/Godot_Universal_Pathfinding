@@ -9,7 +9,9 @@ var Paths: Array
 var storage_array: Array
 
 func _ready() -> void:
-	pass
+	seed(221208)
+	load_tileset_cfg("res://tile_sets/config/square_config.cfg")
+	#random_maze()
 
 
 func _process(_delta: float) -> void:

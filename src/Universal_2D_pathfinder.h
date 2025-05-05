@@ -40,6 +40,10 @@ public:
 	// 	Single_In_Order
 	// };
 
+	bool DP_prev_used;
+
+	int max_iter;
+
 	bool diagonal;
 	void set_diagonal(const bool diag);
 	bool get_diagonal() const;
@@ -113,8 +117,9 @@ public:
 		// Astar_Exponential,						// exponential heuristic with f = g + h*e^h	//potentially (fills Double numeric cappacity 1.7*10^308 with h>200)	have in-script logic to use this on small distances?
 		DIJKSTRA = 1,									// standard Dijkstra algorithm (good for one start to many ends and preprocessing paths for later use)
 		// Dynamic_Programing,							// DP only for many starts to one target
-		
+		DYNAMIC_PROG = 2,
 	} Algorithm;
+	
 	void set_Algorithm(Universal_2D_Pathfinder::Algorithm_Type alg);
 	Universal_2D_Pathfinder::Algorithm_Type get_Algorithm() const;
 

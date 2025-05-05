@@ -28,10 +28,7 @@ void Universal_2D_Pathfinder::_bind_methods() {
 
     // add propperties
 
-    // // Start_position
-    // ClassDB::bind_method(D_METHOD("set_Start_position"), &Universal_2D_Pathfinder::set_Start_position);
-    // ClassDB::bind_method(D_METHOD("get_Start_position"), &Universal_2D_Pathfinder::get_Start_position);
-    // ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "Start_position"), "set_Start_position", "get_Start_position");
+
 
     // Map size
     ClassDB::bind_method(D_METHOD("set_map_size"), &Universal_2D_Pathfinder::set_map_size);
@@ -41,15 +38,20 @@ void Universal_2D_Pathfinder::_bind_methods() {
     // Pathfinding algorithms
     ClassDB::bind_method(D_METHOD("set_Algorithm"), &Universal_2D_Pathfinder::set_Algorithm);
     ClassDB::bind_method(D_METHOD("get_Algorithm"), &Universal_2D_Pathfinder::get_Algorithm);
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "Algorithm", PROPERTY_HINT_ENUM, "A*,Dijkstra"), "set_Algorithm", "get_Algorithm");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "Algorithm", PROPERTY_HINT_ENUM, "A*, Dijkstra, Dynamic Programing"), "set_Algorithm", "get_Algorithm");
     BIND_ENUM_CONSTANT(ASTAR);
     BIND_ENUM_CONSTANT(DIJKSTRA);
+    BIND_ENUM_CONSTANT(DYNAMIC_PROG);
 
     // Heuristics
     ClassDB::bind_method(D_METHOD("set_Heuristic", "Heuristic"), &Universal_2D_Pathfinder::set_Heuristic);
     ClassDB::bind_method(D_METHOD("get_Heuristic"), &Universal_2D_Pathfinder::get_Heuristic);
     ADD_PROPERTY(
-        PropertyInfo(Variant::INT, "Heuristic", PROPERTY_HINT_ENUM, "Euclid, Euclid (to power), Euclid (weighted), Euclid (exponential), Manhatan, Chebyshev, Octile"),
+        PropertyInfo(
+            Variant::INT, 
+            "Heuristic", 
+            PROPERTY_HINT_ENUM, 
+            "Euclid, Euclid (to power), Euclid (weighted), Euclid (exponential), Manhatan, Chebyshev, Octile"),
         "set_Heuristic",
         "get_Heuristic"
     );
@@ -67,7 +69,7 @@ void Universal_2D_Pathfinder::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("set_diagonal"), &Universal_2D_Pathfinder::set_diagonal);
     ClassDB::bind_method(D_METHOD("get_diagonal"), &Universal_2D_Pathfinder::get_diagonal);
-    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "diagonal movement"), "set_diagonal", "get_diagonal");
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "diagonal_movement"), "set_diagonal", "get_diagonal");
 
     ClassDB::bind_method(D_METHOD("set_weight"), &Universal_2D_Pathfinder::set_weight);
     ClassDB::bind_method(D_METHOD("get_weight"), &Universal_2D_Pathfinder::get_weight);
@@ -119,20 +121,20 @@ Universal_2D_Pathfinder::Universal_2D_Pathfinder() {
 
     //%%%%%%% Testing portion of constructor
 
-    Array tile_red;
-    tile_red.append(0);
-    tile_red.append(false);
-    tile_data[Vector2i(0,0)] = tile_red;
-    Array tile_green;
-    tile_green.append(1);
-    tile_green.append(true);
-    tile_data[Vector2i(1,0)] = tile_green;
-    Array tile_blue;
-    tile_blue.append(5);
-    tile_blue.append(true);
-    tile_data[Vector2i(2,0)] = tile_blue;
-    map_initializer(0);
-    Preprocessor();
+    // Array tile_red;
+    // tile_red.append(0);
+    // tile_red.append(false);
+    // tile_data[Vector2i(0,0)] = tile_red;
+    // Array tile_green;
+    // tile_green.append(1);
+    // tile_green.append(true);
+    // tile_data[Vector2i(1,0)] = tile_green;
+    // Array tile_blue;
+    // tile_blue.append(5);
+    // tile_blue.append(true);
+    // tile_data[Vector2i(2,0)] = tile_blue;
+    // map_initializer(0);
+    // Preprocessor();
 
 }
 
@@ -181,6 +183,15 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // Pathfinder
     Array Universal_2D_Pathfinder::Pathfinder(Array Start_points_array, Array End_points_array, const bool debug) {
+        
+        
+
+        if (tile_data.is_empty()) {
+            UtilityFunctions::print("No data for tile types loaded!");
+            return Array();
+        }
+
+        
         for (int i =0; i < Start_points_array.size(); i++) {
             Vector2i pos = Start_points_array[i];
             if (pos.x < 0 || pos.y < 0 || pos.x >= map_size.x || pos.y >= map_size.y) {
@@ -280,6 +291,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
     // Algorithms
         // A*
         Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i end_node) {
+            DP_prev_used = false;
             if (Preprocessed_Map.size() > 0) {
                 if (Preprocessed_Map[0].size() > 0) {
                     map_initializer(2);
@@ -463,6 +475,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         
         // Dijkstra
         Array Universal_2D_Pathfinder::Disjkstra_Pathfinder(Vector2i start_node, Vector2i end_node) {
+            DP_prev_used = false;
             if (Preprocessed_Map.size() > 0) {
                 if (Preprocessed_Map[0].size() > 0) {
                     map_initializer(2);
@@ -583,39 +596,184 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
         // Dynamic Programming
         Array Universal_2D_Pathfinder::DP_Pathfinder(Vector2i start_node, Vector2i end_node) {
             // For DP Nodes parent is going to be its child
+            Vector2i prev_tile;
+            Vector2i current_tile;
+            Vector2i new_tile;
             
-            bool map_ready;
+            static bool map_ready = false;
             
-            if (Preprocessed_Map.size() > 0) {
-                if (Preprocessed_Map[0].size() > 0) {
-                    map_initializer(2);
-                }
+            if (DP_prev_used == false) {
+                map_initializer(2);
+                map_initializer(0);
+                Preprocessor();
             }
 
-            if (!map_ready) {
-                bool update;
-                for (int i = 0; i < 100000; i++) {
-                    if (update == false) {
-                        break;
-                    }
+            if (!map_ready) {   // if map is not prepared do DP algorithm
+                UtilityFunctions::print("generating map");
+                bool update = false;
+                int max_DP_iter = 10;
+                Vector2i ct;    // current tile
+                
 
+
+                for (int DP_iter = 0; DP_iter < max_DP_iter; DP_iter++) {
+                    UtilityFunctions::print("DP iteration: ", DP_iter);
                     for (int x = 0; x < Preprocessed_Map.size(); x++) {
                         for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
-                            
+                            ct = Vector2i(x,y);
+                            UtilityFunctions::print("current tile is ", ct, " with ", Preprocessed_Map[ct.x][ct.y].Node_parent, " as child, and label: ", Preprocessed_Map[ct.x][ct.y].Node_label);
+                            if (ct == end_node) {
+                                UtilityFunctions::print("current tile is end node");
+                                Preprocessed_Map.write[ct.x].write[ct.y].Node_label = 0;
+                                continue;
+                            } else {
+                                if (Preprocessed_Map[ct.x][ct.y].Node_parent == ct) {
+                                    for (Vector2i n : Preprocessed_Map[ct.x][ct.y].Node_neighbors) {
+                                        if (n == end_node) {
+                                            UtilityFunctions::print("c.t. has child itself and neighbor ", n, " is end node");
+                                            Preprocessed_Map.write[ct.x].write[ct.y].Node_label = Preprocessed_Map[n.x][n.y].Node_cost;
+                                            Preprocessed_Map.write[ct.x].write[ct.y].Node_parent = n;
+                                            UtilityFunctions::print("ct's child is set to: ", n);
+                                            update = true;
+                                            break;
+                                        } else if (Preprocessed_Map[n.x][n.y].Node_parent != n) {
+                                            float new_label = Preprocessed_Map[n.x][n.y].Node_label + Preprocessed_Map[n.x][n.y].Node_cost;
+                                            if (new_label < Preprocessed_Map[ct.x][ct.y].Node_label) {
+                                                UtilityFunctions::print("c.t. has child itself and neighbor ", n, " can see end");
+                                                Preprocessed_Map.write[ct.x].write[ct.y].Node_label = new_label;
+                                                Preprocessed_Map.write[ct.x].write[ct.y].Node_parent = n;
+                                                UtilityFunctions::print("ct's parent is set to: ", n);
+                                                update = true;
+                                            }
+                                        }
+                                    }
+                                    
+                                } else {
+                                    
+                                    for (Vector2i n : Preprocessed_Map[ct.x][ct.y].Node_neighbors) {
+                                        if (Preprocessed_Map[n.x][n.y].Node_parent != n) {
+                                            float new_label = Preprocessed_Map[n.x][n.y].Node_label + Preprocessed_Map[n.x][n.y].Node_cost;
+                                            if (new_label < Preprocessed_Map[ct.x][ct.y].Node_label) {
+                                                UtilityFunctions::print("c.t. has ", Preprocessed_Map[ct.x][ct.y].Node_parent, " as child and neighbor ", n, " can see end");
+                                                Preprocessed_Map.write[ct.x].write[ct.y].Node_label = new_label;
+                                                Preprocessed_Map.write[ct.x].write[ct.y].Node_parent = n;
+                                                update = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
+
+
+
+
+                    /*
+                for (int DP_iter = 0; DP_iter < max_DP_iter; DP_iter++) {
+                    for (int x = 0; x < Preprocessed_Map.size(); x++) {
+                        for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
+                            curr_tile = Vector2i(x,y);
+                            for (Vector2i n : Preprocessed_Map[curr_tile.x][curr_tile.y].Node_neighbors) {
+                                if (Preprocessed_Map[n.x][n.y].Node_parent != n) {
+                                    float new_distance = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
+                                    if (Preprocessed_Map[curr_tile.x][curr_tile.y].Distance_to > new_distance) {
+                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Distance_to = new_distance;
+                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Node_parent = n;
+                                        update = true;
+                                    }
+                                } else if (n == end_node) {
+                                    float new_distance = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
+                                    if (Preprocessed_Map[curr_tile.x][curr_tile.y].Distance_to > new_distance) {
+                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Distance_to = new_distance;
+                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Node_parent = n;
+                                        update = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                */
+
+
+                    /*
+                // for (int DP_iter = 0; DP_iter < max_DP_iter; DP_iter++) {
+                    
+                //     for (int x = 0; x < Preprocessed_Map.size(); x++) {
+                //         for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
+                //             curr_tile = Vector2i(x,y);
+
+                //             if (Preprocessed_Map[x][y].Node_parent != curr_tile) {
+                //                 if (Preprocessed_Map[x][y].Node_neighbors.has(end_node)) {
+                //                     Preprocessed_Map.write[x].write[y].Node_parent = end_node;
+                //                     Preprocessed_Map.write[x].write[y].Distance_to += Preprocessed_Map[end_node.x][end_node.y].Node_cost;
+                //                     update = true;
+                //                 } else {
+                //                     for (Vector2i n : Preprocessed_Map[x][y].Node_neighbors) {
+                //                         if ( Preprocessed_Map[n.x][n.y].Node_parent != n) {
+                //                             if (Preprocessed_Map[n.x][n.y].Distance_to <= Preprocessed_Map[x][y].Distance_to) {
+                //                                 Preprocessed_Map.write[x].write[y].Node_parent = n;
+                //                                 float new_dist = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
+                //                                 Preprocessed_Map.write[x].write[y].Distance_to = new_dist;
+                //                                 update = true;
+                //                             }
+                //                         }
+                //                     }
+                //                 }
+                //             } else {
+                //                 for (Vector2i n : Preprocessed_Map[x][y].Node_neighbors) {
+                //                     if ( Preprocessed_Map[n.x][n.y].Node_parent != n) {
+                //                         if (Preprocessed_Map[n.x][n.y].Distance_to <= Preprocessed_Map[x][y].Distance_to) {
+                //                             Preprocessed_Map.write[x].write[y].Node_parent = n;
+                //                             float new_dist = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
+                //                             Preprocessed_Map.write[x].write[y].Distance_to = new_dist;
+                //                             update = true;
+                //                         }
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                */
+                    
+                    if (update == false) {
+                        break;
+                    }
                 }
 
 
                 map_ready = true;
+                UtilityFunctions::print("Map prepared for DP");
+            }
+            
+            if (map_ready) {
+                UtilityFunctions::print("finding path");
+                current_tile = start_node;
+                int iter = 0;
+                Path.clear();
+                while (current_tile != end_node && iter < max_iter) {
+                    UtilityFunctions::print("current tile: ", current_tile);
+                    Path.append(current_tile);
+
+                    new_tile = Preprocessed_Map[current_tile.x][current_tile.y].Node_parent;
+                    
+                    UtilityFunctions::print("new tile: ", new_tile);
+
+                    if (new_tile == current_tile || new_tile == prev_tile) {
+                        UtilityFunctions::print("Path looped on itself!");
+                        return Array();
+                    }
+
+                    prev_tile = current_tile;
+                    current_tile = new_tile;
+
+                    iter++;
+                }
             }
 
 
-            
-
-
-            
+            DP_prev_used = false;
             return Array{};
         }
 
@@ -1027,7 +1185,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 return;
             }
             String full_path = "user://" + path_to_file + "//" + file_name + ".cfg";
-            // UtilityFunctions::print("file path: ", full_path);
+            UtilityFunctions::print("file path: ", full_path);
             // saver->save(full_path);
             Error save_state;
             save_state = saver->save(full_path);
