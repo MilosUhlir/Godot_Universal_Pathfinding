@@ -603,15 +603,16 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             static bool map_ready = false;
             
             if (DP_prev_used == false) {
-                map_initializer(2);
                 map_initializer(0);
+                // map_initializer(2);
                 Preprocessor();
+                map_ready = false;
             }
 
             if (!map_ready) {   // if map is not prepared do DP algorithm
                 UtilityFunctions::print("generating map");
                 bool update = false;
-                int max_DP_iter = 10;
+                int max_DP_iter = 100;
                 Vector2i ct;    // current tile
                 
 
@@ -621,28 +622,28 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     for (int x = 0; x < Preprocessed_Map.size(); x++) {
                         for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
                             ct = Vector2i(x,y);
-                            UtilityFunctions::print("current tile is ", ct, " with ", Preprocessed_Map[ct.x][ct.y].Node_parent, " as child, and label: ", Preprocessed_Map[ct.x][ct.y].Node_label);
+                            // UtilityFunctions::print("current tile is ", ct, " with ", Preprocessed_Map[ct.x][ct.y].Node_parent, " as child, and label: ", Preprocessed_Map[ct.x][ct.y].Node_label);
                             if (ct == end_node) {
-                                UtilityFunctions::print("current tile is end node");
+                                // UtilityFunctions::print("current tile is end node");
                                 Preprocessed_Map.write[ct.x].write[ct.y].Node_label = 0;
                                 continue;
                             } else {
                                 if (Preprocessed_Map[ct.x][ct.y].Node_parent == ct) {
                                     for (Vector2i n : Preprocessed_Map[ct.x][ct.y].Node_neighbors) {
                                         if (n == end_node) {
-                                            UtilityFunctions::print("c.t. has child itself and neighbor ", n, " is end node");
+                                            // UtilityFunctions::print("c.t. has child itself and neighbor ", n, " is end node");
                                             Preprocessed_Map.write[ct.x].write[ct.y].Node_label = Preprocessed_Map[n.x][n.y].Node_cost;
                                             Preprocessed_Map.write[ct.x].write[ct.y].Node_parent = n;
-                                            UtilityFunctions::print("ct's child is set to: ", n);
+                                            // UtilityFunctions::print("ct's child is set to: ", n);
                                             update = true;
                                             break;
                                         } else if (Preprocessed_Map[n.x][n.y].Node_parent != n) {
                                             float new_label = Preprocessed_Map[n.x][n.y].Node_label + Preprocessed_Map[n.x][n.y].Node_cost;
                                             if (new_label < Preprocessed_Map[ct.x][ct.y].Node_label) {
-                                                UtilityFunctions::print("c.t. has child itself and neighbor ", n, " can see end");
+                                                // UtilityFunctions::print("c.t. has child itself and neighbor ", n, " can see end");
                                                 Preprocessed_Map.write[ct.x].write[ct.y].Node_label = new_label;
                                                 Preprocessed_Map.write[ct.x].write[ct.y].Node_parent = n;
-                                                UtilityFunctions::print("ct's parent is set to: ", n);
+                                                // UtilityFunctions::print("ct's parent is set to: ", n);
                                                 update = true;
                                             }
                                         }
@@ -654,7 +655,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                                         if (Preprocessed_Map[n.x][n.y].Node_parent != n) {
                                             float new_label = Preprocessed_Map[n.x][n.y].Node_label + Preprocessed_Map[n.x][n.y].Node_cost;
                                             if (new_label < Preprocessed_Map[ct.x][ct.y].Node_label) {
-                                                UtilityFunctions::print("c.t. has ", Preprocessed_Map[ct.x][ct.y].Node_parent, " as child and neighbor ", n, " can see end");
+                                                // UtilityFunctions::print("c.t. has ", Preprocessed_Map[ct.x][ct.y].Node_parent, " as child and neighbor ", n, " can see end");
                                                 Preprocessed_Map.write[ct.x].write[ct.y].Node_label = new_label;
                                                 Preprocessed_Map.write[ct.x].write[ct.y].Node_parent = n;
                                                 update = true;
@@ -750,9 +751,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             if (map_ready) {
                 UtilityFunctions::print("finding path");
                 current_tile = start_node;
+                new_tile = start_node;
                 int iter = 0;
                 Path.clear();
+                max_iter = 1000;
                 while (current_tile != end_node && iter < max_iter) {
+                    current_tile = new_tile;
                     UtilityFunctions::print("current tile: ", current_tile);
                     Path.append(current_tile);
 
@@ -760,21 +764,26 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     
                     UtilityFunctions::print("new tile: ", new_tile);
 
+                    if (new_tile == end_node) {
+                        Path.append(new_tile);
+                        break;
+                    }
+
+
                     if (new_tile == current_tile || new_tile == prev_tile) {
                         UtilityFunctions::print("Path looped on itself!");
                         return Array();
                     }
 
                     prev_tile = current_tile;
-                    current_tile = new_tile;
 
                     iter++;
                 }
             }
 
 
-            DP_prev_used = false;
-            return Array{};
+            DP_prev_used = true;
+            return Path;
         }
 
 
@@ -784,6 +793,9 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
     // preprocessor
     void Universal_2D_Pathfinder::Preprocessor() {
+
+        DP_prev_used = false;
+
         if (map_size == Vector2i(0,0)) {
             // UtilityFunctions::print("Preprocessor finished");
             // return Preprocessed_Map;
@@ -803,8 +815,8 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                         tile_cost = 0;
                         reachable = false;
                     } else {
-                        tile_cost = data[0];
-                        reachable = data[1];
+                        tile_cost = data[1];
+                        reachable = data[2];
                     }
                     Preprocessed_Map.write[x].write[y].Node_cost = tile_cost;
                     Preprocessed_Map.write[x].write[y].Reachable = reachable;

@@ -51,7 +51,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
 				var target = Vector2i(2,2)
 				pathfinder.set_cell(target, 0, Vector2i(1,0))
-				starts = [pathfinder.local_to_map(mouse_pos)]
+				starts = [mouse_pos]
 				ends = [target]
 				agent.velocity = Vector2(0,0)
 				agent.current_tile = pathfinder.map_to_local(mouse_pos)
@@ -66,6 +66,9 @@ func _unhandled_input(event: InputEvent) -> void:
 					pathfinder.load_from_file("user://DP_data")
 				else:
 					Paths = pathfinder.Pathfinder(starts, ends, false)
+					for p in range(0, Paths.size()):
+						var pth: Array = Paths[p]
+						pth.reverse()
 					pathfinder.save_to_file("", "DP_data")
 			else:
 				Paths = pathfinder.Pathfinder(starts, ends, false)
