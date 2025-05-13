@@ -167,6 +167,8 @@ public:
 			// label calculation
 			double Label_Calculator(Vector2i node, Vector2i end, bool is_tile_diagonal, bool overwrite);
 
+			Array Label_Calculator(Vector2i &node, Vector2i &end, bool is_tile_diagonal);
+
 			// Map initializer
 			void map_initializer(int type);
 			bool button;
@@ -174,7 +176,7 @@ public:
 			bool get_button();
 
 			// find minimal label
-			Array find_minimum_label(Array& open_list);
+			Array find_minimum_label(Array& open_list, bool label);
 
 		// file management
 			// map savers

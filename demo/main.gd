@@ -45,11 +45,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			var mouse_pos = pathfinder.local_to_map(get_local_mouse_position())
 			target_marker.set_position(pathfinder.map_to_local(mouse_pos))
 			print(mouse_pos)
-			var time_start = Time.get_ticks_usec()
+			
 			var starts: Array
 			var ends: Array
 			if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
-				var target = Vector2i(2,2)
+				var target = Vector2i(pathfinder.map_size.x-2,pathfinder.map_size.y-2)
 				pathfinder.set_cell(target, 0, Vector2i(1,0))
 				starts = [mouse_pos]
 				ends = [target]
@@ -61,27 +61,37 @@ func _unhandled_input(event: InputEvent) -> void:
 				starts = [pathfinder.local_to_map(agent.position)]
 				ends = [mouse_pos]
 			Paths.clear()
+			var time_start: int
+			var time_end: int
 			if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
 				if FileAccess.file_exists("user://DP_data"):
 					pathfinder.load_from_file("user://DP_data")
 				else:
+					time_start = Time.get_ticks_usec()
 					Paths = pathfinder.Pathfinder(starts, ends, false)
+					time_end = Time.get_ticks_usec()
 					for p in range(0, Paths.size()):
 						var pth: Array = Paths[p]
 						pth.reverse()
 					pathfinder.save_to_file("", "DP_data")
 			else:
+				time_start = Time.get_ticks_usec()
 				Paths = pathfinder.Pathfinder(starts, ends, false)
+				time_end = Time.get_ticks_usec()
 			if Paths.size() > 0:
 				$Drawing_node.Paths = Paths
 				var path = Paths[0]
-				var time_end = Time.get_ticks_usec()
-				var time_delta = time_end-time_start
+				var time_delta: float
+				time_delta = time_end-time_start
 				var unit: String
-				if time_delta > 1000:
+				if time_delta < 1000:
+					unit = " µs"
+				elif time_delta >= 1000 and time_delta < 1000000:
+					time_delta = time_delta/1000
 					unit = " ms"
 				else:
-					unit = " µs"
+					time_delta = time_delta/1000000
+					unit = "s"
 				agent.path = path
 				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "last path search took " + str(time_delta) + unit
 				$CanvasLayer/UI/stat_display/Path_length.text = "last path length is " + str(path.size()) + " tiles"
