@@ -183,3 +183,124 @@ Array Universal_2D_Pathfinder::AStar_Pathfinder(Vector2i start_node, Vector2i en
             // return placeholder;
             return Path;
         }
+
+
+
+// Dijkstra
+        Array Universal_2D_Pathfinder::Disjkstra_Pathfinder(Vector2i start_node, Vector2i end_node) {
+            DP_prev_used = false;
+            if (Preprocessed_Map.size() > 0) {
+                if (Preprocessed_Map[0].size() > 0) {
+                    map_initializer(2);
+                }
+            }
+            
+            OPEN_list.clear();
+            CLOSED_list.clear();
+
+            // put first node into OPEN, CLOSED is empty
+            int start_x = start_node.x;
+            int start_y = start_node.y;
+            OPEN_list.append(start_node);
+
+            if (OPEN_list.is_empty()) {
+                UtilityFunctions::print("A* exited with: OPEN array is empty");
+                return Array();
+            };
+
+            Label_Calculator(OPEN_list[0], end_node, false, true);
+            bool exit_flag = false;
+            Vector2i previous_node;
+            Vector2i current_node;
+            Vector2i min;
+            int iter = 1;
+            while (exit_flag == false) {
+                // UtilityFunctions::print("A* iteration: ", iter);
+                // if OPEN list is empty there is no solution -> terminate search
+                // if (OPEN_list.is_empty()) {
+                //     UtilityFunctions::print("A* exited with: OPEN array is empty");
+                //     return Array();
+                // };
+
+                // UtilityFunctions::print("Open list: ", OPEN_list);
+
+                current_node = OPEN_list.pop_front();
+                if (current_node == end_node) {
+                    exit_flag = true;
+                }
+
+                CLOSED_list.append(current_node);
+
+                // expanding neighbors
+
+
+                for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
+                    Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
+                    bool open_has = OPEN_list.has(curr_nbr);
+                    bool closed_has = CLOSED_list.has(curr_nbr);
+                    bool diag;
+                    if (i >= 4) {
+                        diag = true;
+                    } else {
+                        diag = false;
+                    }
+                    double f_n = Label_Calculator(curr_nbr, end_node, diag, false);
+                    if (open_has == true || closed_has == true) {
+                        if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Distance_to) {
+                            // Label_Calculator(curr_nbr, end_node, true);
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
+                            // if (closed_has && !open_has) {
+                            //     OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
+                            // }
+                        }
+                    } else if (open_has == false && closed_has == false) {
+                    //     double f_n = Label_Calculator(curr_nbr, end_node, true);
+                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
+                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
+                        OPEN_list.append(curr_nbr);
+                    }
+                }
+
+                if (exit_flag == true) {
+                    break;
+                }
+
+                if (OPEN_list.is_empty()) {
+                    UtilityFunctions::print("A* exited with: OPEN array is empty! After ", iter, " iterations");
+                    return Array();
+                }
+                
+                if (iter > 10000) {
+                    UtilityFunctions::print("A* exited with: Iteration limit reached");
+                    break;
+                }
+
+                iter++;
+            }
+
+            if (CLOSED_list.has(end_node)) {
+                current_node = end_node;
+            }
+            Path.append(current_node);
+            while (!(current_node == start_node)) {
+                current_node = Preprocessed_Map[current_node.x][current_node.y].Node_parent;
+                Path.append(current_node);
+                if (Path.size() >= MAX_PATH_LENGTH) {
+                    break;
+                }
+            }
+
+            
+
+            UtilityFunctions::print("A* finished and found path in ", iter, " iterations");
+
+            
+            Array placeholder;
+            placeholder.append(Vector2i(0,0));
+            // return placeholder;
+            return Path;
+
+
+            return Array();
+        }
