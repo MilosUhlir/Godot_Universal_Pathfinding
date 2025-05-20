@@ -297,43 +297,79 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     map_initializer(2);
                 }
             }
+
             OPEN_list.clear();
             CLOSED_list.clear();
+
+            // put first node into OPEN, CLOSED is empty
             int start_x = start_node.x;
             int start_y = start_node.y;
             OPEN_list.append(start_node);
+
             if (OPEN_list.is_empty()) {
                 UtilityFunctions::print("A* exited with: OPEN array is empty");
                 return Array();
-            }
-            Vector2i ct = OPEN_list[0];
-            Array labels = Label_Calculator(ct, end_node, false);
-            Preprocessed_Map.write[start_node.x].write[start_node.y].Distance_to = 0;
-            Preprocessed_Map.write[start_node.x].write[start_node.y].Node_label = labels[2];
+            };
+
+            Label_Calculator(OPEN_list[0], end_node, false, true);
             bool exit_flag = false;
             Vector2i previous_node;
             Vector2i current_node;
             Vector2i min;
-            int iter = 0;
-            while (current_node != end_node) {
-                iter++;
-                Array mins = find_minimum_label(OPEN_list, true);
-                if (!(mins.is_empty())) {
-                    if (mins.has(end_node)) {
-                        current_node = end_node;
-                    } else {
-                        current_node = mins[0];
-                        int idx = OPEN_list.find(min, 0);
-                        current_node = OPEN_list.pop_at(idx);
+            int iter = 1;
+            while (exit_flag == false) {
+                // UtilityFunctions::print("A* iteration: ", iter);
+                // if OPEN list is empty there is no solution -> terminate search
+                // if (OPEN_list.is_empty()) {
+                //     UtilityFunctions::print("A* exited with: OPEN array is empty");
+                //     return Array();
+                // };
+
+                // UtilityFunctions::print("Open list: ", OPEN_list);
+
+                // pull node with the smallest f(i) value in OPEN, if multiple check if any is end node
+                Array mins = find_minimum_label(OPEN_list);
+                // UtilityFunctions::print("minimums: ", mins);
+                if (mins.size() > 1) {
+                    for (int i = 0; i < mins.size(); i++) {
+                        if (mins[i] == end_node) {
+                            // exit_flag = true;
+                            min = mins[i];
+                            break;
+                        } else {
+                            min = mins.back();
+                        }
                     }
+                } else if (mins.size() == 1) {
+                    min = mins[0];
                 } else {
                     UtilityFunctions::print("A* exited with: No minimum found! After ", iter, " iterations");
                     break;
                 }
                 int idx = OPEN_list.find(min, 0);
                 current_node = OPEN_list.pop_at(idx);
+                if (current_node == end_node) {
+                    exit_flag = true;
+                }
+
                 CLOSED_list.append(current_node);
-                for (int i=0; i<Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
+
+                // expanding neighbors
+                // Array curr_node_data;
+                // // UtilityFunctions::print("current node: ", current_node);
+                // curr_node_data.clear();
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_parent);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_cost);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Distance_to);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Node_label);
+                // curr_node_data.append(Preprocessed_Map[current_node.x][current_node.y].Reachable);
+                // UtilityFunctions::print(curr_node_data);
+                // for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
+                //     UtilityFunctions::print("current node's neighbors: ", Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i]);
+                // }
+
+
+                for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
                     Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
                     bool open_has = OPEN_list.has(curr_nbr);
                     bool closed_has = CLOSED_list.has(curr_nbr);
@@ -344,30 +380,47 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     } else {
                         diag = false;
                     }
-
-                    Array labels = Label_Calculator(current_node, end_node, diag);
-                    float gn = labels[0];
-                    float fn = labels[1];
-                    float h = labels[2];
+                    double f_n = Label_Calculator(curr_nbr, end_node, diag, false);
+                    // double f_n;
                     if (open_has == true || closed_has == true) {
-                        if (gn < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Distance_to) {
-                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = gn;
-                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = fn;
+                        if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Node_label) {
+                            // Label_Calculator(curr_nbr, end_node, true);
+                            f_n = Label_Calculator(curr_nbr, end_node, diag, false);
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = f_n;
                             Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
                             if (closed_has && !open_has) {
                                 OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
                             }
                         }
-                    } else {
-                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = gn;
-                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = fn;
+                    } else if (open_has == false && closed_has == false) {
+                    //     double f_n = Label_Calculator(curr_nbr, end_node, true);
+                        f_n = Label_Calculator(curr_nbr, end_node, diag, false);
+                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = f_n;
                         Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
                         OPEN_list.append(curr_nbr);
                     }
                 }
+
+                if (exit_flag == true) {
+                    break;
+                }
+
+                if (OPEN_list.is_empty()) {
+                    UtilityFunctions::print("A* exited with: OPEN array is empty! After ", iter, " iterations");
+                    return Array();
+                }
+                
+                if (iter > 10000) {
+                    UtilityFunctions::print("A* exited with: Iteration limit reached");
+                    break;
+                }
+
+                iter++;
             }
-            Path.clear();
-            current_node = end_node;
+
+            if (CLOSED_list.has(end_node)) {
+                current_node = end_node;
+            }
             Path.append(current_node);
             while (!(current_node == start_node)) {
                 current_node = Preprocessed_Map[current_node.x][current_node.y].Node_parent;
@@ -376,7 +429,46 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     break;
                 }
             }
+
+            // // if (CLOSED_list.has(end_node)) {
+            // //     current_node = end_node;
+            // // }
+            // // Path.append(current_node);
+            // iter = 1;
+            // Vector2i new_node;
+            // while (!(current_node == start_node) || iter < MAX_PATH_LENGTH) {
+            //     if (iter = 1) {
+            //         if (CLOSED_list.has(end_node)) {
+            //             current_node = end_node;
+            //         }
+            //     } else {
+            //         new_node = Preprocessed_Map[current_node.x][current_node.y].Node_parent;
+            //         if (new_node == current_node) {
+            //             UtilityFunctions::print("A* path looped on itself!");
+            //             return Array();
+            //         } else {
+            //             current_node = new_node;
+            //         }
+            //     }
+            //     if (!(Path.has(current_node))) {
+            //         Path.append(current_node);
+            //         if (Path.size() >= MAX_PATH_LENGTH) {
+            //             break;
+            //         }
+            //     } //else {
+            //     //     UtilityFunctions::print("A* path looped on itself!");
+            //     //     break;
+            //     // }
+            //     iter++;
+            // }
+
             UtilityFunctions::print("A* finished and found path in ", iter, " iterations");
+
+            // UtilityFunctions::print("OPEN_list: ", OPEN_list);
+            // UtilityFunctions::print("CLOSED_list: ", CLOSED_list);
+            Array placeholder;
+            placeholder.append(Vector2i(0,0));
+            // return placeholder;
             return Path;
         }
 
@@ -389,77 +481,94 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     map_initializer(2);
                 }
             }
+            
             OPEN_list.clear();
             CLOSED_list.clear();
+
+            // put first node into OPEN, CLOSED is empty
             int start_x = start_node.x;
             int start_y = start_node.y;
             OPEN_list.append(start_node);
+
             if (OPEN_list.is_empty()) {
                 UtilityFunctions::print("A* exited with: OPEN array is empty");
                 return Array();
-            }
-            Vector2i ct = OPEN_list[0];
-            Array labels = Label_Calculator(ct, end_node, false);
-            Preprocessed_Map.write[start_node.x].write[start_node.y].Distance_to = 0;
-            Preprocessed_Map.write[start_node.x].write[start_node.y].Node_label = labels[2];
+            };
+
+            Label_Calculator(OPEN_list[0], end_node, false, true);
             bool exit_flag = false;
             Vector2i previous_node;
             Vector2i current_node;
             Vector2i min;
-            int iter = 0;
-            while (current_node != end_node) {
-                iter++;
-                Array mins = find_minimum_label(OPEN_list, false);
-                if (!(mins.is_empty())) {
-                    if (mins.has(end_node)) {
-                        current_node = end_node;
-                    } else {
-                        current_node = mins[0];
-                        int idx = OPEN_list.find(min, 0);
-                        current_node = OPEN_list.pop_at(idx);
-                    }
-                } else {
-                    UtilityFunctions::print("Dijkstra exited with: No minimum found! After ", iter, " iterations");
-                    break;
+            int iter = 1;
+            while (exit_flag == false) {
+                // UtilityFunctions::print("A* iteration: ", iter);
+                // if OPEN list is empty there is no solution -> terminate search
+                // if (OPEN_list.is_empty()) {
+                //     UtilityFunctions::print("A* exited with: OPEN array is empty");
+                //     return Array();
+                // };
+
+                // UtilityFunctions::print("Open list: ", OPEN_list);
+
+                current_node = OPEN_list.pop_front();
+                if (current_node == end_node) {
+                    exit_flag = true;
                 }
-                int idx = OPEN_list.find(min, 0);
-                current_node = OPEN_list.pop_at(idx);
+
                 CLOSED_list.append(current_node);
-                for (int i=0; i<Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
+
+                // expanding neighbors
+
+
+                for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
                     Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
                     bool open_has = OPEN_list.has(curr_nbr);
                     bool closed_has = CLOSED_list.has(curr_nbr);
-                    
-                    bool diag = false;
-                    if (i > 3) {
+                    bool diag;
+                    if (i >= 4) {
                         diag = true;
                     } else {
                         diag = false;
                     }
-
-                    Array labels = Label_Calculator(current_node, end_node, diag);
-                    float gn = labels[0];
-                    float fn = labels[1];
-                    float h = labels[2];
+                    double f_n = Label_Calculator(curr_nbr, end_node, diag, false);
                     if (open_has == true || closed_has == true) {
-                        if (gn < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Distance_to) {
-                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = gn;
-                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = fn;
+                        if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Distance_to) {
+                            // Label_Calculator(curr_nbr, end_node, true);
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
                             Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
-                            if (closed_has && !open_has) {
-                                OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
-                            }
+                            // if (closed_has && !open_has) {
+                            //     OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
+                            // }
                         }
-                    } else {
-                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = gn;
-                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = fn;
+                    } else if (open_has == false && closed_has == false) {
+                    //     double f_n = Label_Calculator(curr_nbr, end_node, true);
+                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
                         Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
                         OPEN_list.append(curr_nbr);
                     }
                 }
+
+                if (exit_flag == true) {
+                    break;
+                }
+
+                if (OPEN_list.is_empty()) {
+                    UtilityFunctions::print("A* exited with: OPEN array is empty! After ", iter, " iterations");
+                    return Array();
+                }
+                
+                if (iter > 10000) {
+                    UtilityFunctions::print("A* exited with: Iteration limit reached");
+                    break;
+                }
+
+                iter++;
             }
-            Path.clear();
-            current_node = end_node;
+
+            if (CLOSED_list.has(end_node)) {
+                current_node = end_node;
+            }
             Path.append(current_node);
             while (!(current_node == start_node)) {
                 current_node = Preprocessed_Map[current_node.x][current_node.y].Node_parent;
@@ -468,8 +577,19 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                     break;
                 }
             }
-            UtilityFunctions::print("Dijkstra finished and found path in ", iter, " iterations");
+
+            
+
+            UtilityFunctions::print("A* finished and found path in ", iter, " iterations");
+
+            
+            Array placeholder;
+            placeholder.append(Vector2i(0,0));
+            // return placeholder;
             return Path;
+
+
+            return Array();
         }
 
 
@@ -492,7 +612,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             if (!map_ready) {   // if map is not prepared do DP algorithm
                 UtilityFunctions::print("generating map");
                 bool update = false;
-                int max_DP_iter = 10000;
+                int max_DP_iter;
+                if (map_size.x >= map_size.y) {
+                    max_DP_iter = map_size.x * 10;
+                } else {
+                    max_DP_iter = map_size.y * 10;
+                }
                 Vector2i ct;    // current tile
                 
 
@@ -546,77 +671,6 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                             }
                         }
                     }
-
-
-
-
-
-                    /*
-                for (int DP_iter = 0; DP_iter < max_DP_iter; DP_iter++) {
-                    for (int x = 0; x < Preprocessed_Map.size(); x++) {
-                        for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
-                            curr_tile = Vector2i(x,y);
-                            for (Vector2i n : Preprocessed_Map[curr_tile.x][curr_tile.y].Node_neighbors) {
-                                if (Preprocessed_Map[n.x][n.y].Node_parent != n) {
-                                    float new_distance = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
-                                    if (Preprocessed_Map[curr_tile.x][curr_tile.y].Distance_to > new_distance) {
-                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Distance_to = new_distance;
-                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Node_parent = n;
-                                        update = true;
-                                    }
-                                } else if (n == end_node) {
-                                    float new_distance = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
-                                    if (Preprocessed_Map[curr_tile.x][curr_tile.y].Distance_to > new_distance) {
-                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Distance_to = new_distance;
-                                        Preprocessed_Map.write[curr_tile.x].write[curr_tile.y].Node_parent = n;
-                                        update = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                */
-
-
-                    /*
-                // for (int DP_iter = 0; DP_iter < max_DP_iter; DP_iter++) {
-                    
-                //     for (int x = 0; x < Preprocessed_Map.size(); x++) {
-                //         for (int y = 0; y < Preprocessed_Map[0].size(); y++) {
-                //             curr_tile = Vector2i(x,y);
-
-                //             if (Preprocessed_Map[x][y].Node_parent != curr_tile) {
-                //                 if (Preprocessed_Map[x][y].Node_neighbors.has(end_node)) {
-                //                     Preprocessed_Map.write[x].write[y].Node_parent = end_node;
-                //                     Preprocessed_Map.write[x].write[y].Distance_to += Preprocessed_Map[end_node.x][end_node.y].Node_cost;
-                //                     update = true;
-                //                 } else {
-                //                     for (Vector2i n : Preprocessed_Map[x][y].Node_neighbors) {
-                //                         if ( Preprocessed_Map[n.x][n.y].Node_parent != n) {
-                //                             if (Preprocessed_Map[n.x][n.y].Distance_to <= Preprocessed_Map[x][y].Distance_to) {
-                //                                 Preprocessed_Map.write[x].write[y].Node_parent = n;
-                //                                 float new_dist = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
-                //                                 Preprocessed_Map.write[x].write[y].Distance_to = new_dist;
-                //                                 update = true;
-                //                             }
-                //                         }
-                //                     }
-                //                 }
-                //             } else {
-                //                 for (Vector2i n : Preprocessed_Map[x][y].Node_neighbors) {
-                //                     if ( Preprocessed_Map[n.x][n.y].Node_parent != n) {
-                //                         if (Preprocessed_Map[n.x][n.y].Distance_to <= Preprocessed_Map[x][y].Distance_to) {
-                //                             Preprocessed_Map.write[x].write[y].Node_parent = n;
-                //                             float new_dist = Preprocessed_Map[n.x][n.y].Distance_to + Preprocessed_Map[n.x][n.y].Node_cost;
-                //                             Preprocessed_Map.write[x].write[y].Distance_to = new_dist;
-                //                             update = true;
-                //                         }
-                //                     }
-                //                 }
-                //             }
-                //         }
-                //     }
-                */
                     
                     if (update == false) {
                         break;
@@ -838,81 +892,13 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             } else {
                 double f_n;
                 if (Algorithm == Algorithm_Type::ASTAR) {
-                    f_n = parent_distance + cost;// + cost_mod + h;
+                    f_n = parent_distance + cost + cost_mod + h;
                 } else if (Algorithm == Algorithm_Type::DIJKSTRA)
                 {
-                    f_n = parent_distance + cost;// + cost_mod;
+                    f_n = parent_distance + cost + cost_mod;
                 }
                 return f_n;
             }
-        }
-
-        Array Universal_2D_Pathfinder::Label_Calculator(Vector2i &_node, Vector2i &end, bool is_tile_diagonal) {
-            float gn;
-            float fn;
-
-            Vector2i coords = Preprocessed_Map[_node.x][_node.y].Node_coordinates;
-
-            double cost = Preprocessed_Map[_node.x][_node.y].Node_cost;
-            double cost_mod = 0;
-            if (is_tile_diagonal == true) {
-                cost = cost + sqrt(2);
-            } else {
-                cost += 0;
-            }
-
-
-            Vector2i parent = Preprocessed_Map[_node.x][_node.y].Node_parent;
-            double parent_distance;
-            if (parent == coords) {
-                parent_distance = 0;
-            } else {
-                parent_distance = Preprocessed_Map[parent.x][parent.y].Distance_to;
-            }
-
-
-            double h;
-            int x = abs(coords.x - end.x);
-            int y = abs(coords.y - end.y);
-            double x_pow = pow(x, 2);;
-            double y_pow = pow(y, 2);;
-            switch (Heuristic)
-            {
-            case 0:
-                h = sqrt(x_pow + y_pow);
-                break;
-            case 1:
-                h = pow(sqrt(x_pow + y_pow), weight);
-                break;
-            case 2:
-                h = sqrt(x_pow + y_pow) * weight;
-                break;
-            case 3:
-                h = sqrt(x_pow + y_pow);
-                h = h * exp(h);
-                break;
-            case 4:
-                h = x + y;
-                break;
-            case 5:
-                h = (x > y) ? x : y; // if x > y -> x else y
-                break;
-            case 6:
-                int max = (x > y) ? x : y; // if x > y -> x else y
-                int min = (x < y) ? x : y; // if x < y -> x else y
-                h = (min * (sqrt(2) - 1)) + max;
-                break;
-            }
-
-            gn = parent_distance + cost;
-            fn = gn + h;
-
-            Array ret_arr;
-            ret_arr.clear();
-            ret_arr.append(gn);
-            ret_arr.append(fn);
-            ret_arr.append(h);
-            return ret_arr;
         }
 
         // Map initializer
@@ -1022,18 +1008,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
 
         // find minimal label
-        Array Universal_2D_Pathfinder::find_minimum_label(Array& open_list, bool label) {
+        Array Universal_2D_Pathfinder::find_minimum_label(Array& open_list) {
             Array minimums = Array();
             float min = 1.7e10;
             for (int i = 0; i < open_list.size(); i++) {
                 Vector2i coords = open_list[i];
-                float l;
-                if (label) {
-                    l =  Preprocessed_Map[coords.x][coords.y].Node_label;
-                } else {
-                    l =  Preprocessed_Map[coords.x][coords.y].Distance_to;
-                }
-
+                float l =  Preprocessed_Map[coords.x][coords.y].Node_label;
                 if (l < min) {
                     min = l;
                 } else {
@@ -1042,12 +1022,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             }
             for (int i = 0; i < open_list.size(); i++) {
                 Vector2i coords = open_list[i];
-                float l;
-                if (label) {
-                    l =  Preprocessed_Map[coords.x][coords.y].Node_label;
-                } else {
-                    l =  Preprocessed_Map[coords.x][coords.y].Distance_to;
-                }
+                float l =  Preprocessed_Map[coords.x][coords.y].Node_label;
                 if (l - min < 1e-10) {
                     minimums.append(open_list[i]);
                 }

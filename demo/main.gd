@@ -309,5 +309,5 @@ func _on_run_tests_pressed() -> void:
 				
 				var test_end_time = Time.get_ticks_usec()
 				var test_time_delta = test_end_time-test_start_time
-				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "testování proběhlo za "+test_time_delta+" µs"
+				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "testování proběhlo za "+str(test_time_delta)+" µs"
 				pass
