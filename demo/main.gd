@@ -11,6 +11,8 @@ extends Node2D
 @onready var blue_tile = $CanvasLayer/UI/Tile_placement_UI/GridContainer/blue_tile
 @onready var red_tile = $CanvasLayer/UI/Tile_placement_UI/GridContainer/red_tile
 
+@onready var Drawing_node = $Drawing_node
+
 # Variables to track FPS
 var current_fps:float = 0
 var min_fps:float = INF
@@ -49,6 +51,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			var starts: Array
 			var ends: Array
 			if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
+				Drawing_node.Open.clear()
+				Drawing_node.Closed.clear()
 				var target = Vector2i(pathfinder.map_size.x-2,pathfinder.map_size.y-2)
 				pathfinder.set_cell(target, 0, Vector2i(1,0))
 				starts = [mouse_pos]
@@ -79,7 +83,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				Paths = pathfinder.Pathfinder(starts, ends, false)
 				time_end = Time.get_ticks_usec()
 			if Paths.size() > 0:
-				$Drawing_node.Paths = Paths
+				Drawing_node.Paths = Paths
 				var path = Paths[0]
 				var time_delta: float
 				time_delta = time_end-time_start
@@ -95,6 +99,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				agent.path = path
 				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "last path search took " + str(time_delta) + unit
 				$CanvasLayer/UI/stat_display/Path_length.text = "last path length is " + str(path.size()) + " tiles"
+			#Drawing_node.Open.clear()
+			#Drawing_node.Closed.clear()
 			$Drawing_node.queue_redraw()
 		elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_released():
 			var mouse_pos = pathfinder.local_to_map(get_local_mouse_position())
@@ -201,3 +207,107 @@ func _on_clear_map_pressed() -> void:
 		for y in range(0, pathfinder.map_size.y):
 			pathfinder.set_cell(Vector2i(x,y), 0, Vector2i(1,0))
 	pass # Replace with function body.
+
+
+func _on_debug_pressed() -> void:
+	
+	pass # Replace with function body.
+
+
+func _on_run_tests_pressed() -> void:
+	var test_start_time = Time.get_ticks_usec()
+	var maps:Array = [
+		Vector2i(20,10),
+		Vector2i(50,25), 
+		Vector2i(100,50), 
+		Vector2i(200,100), 
+		Vector2i(500,250)
+		]
+	
+	var shapes:Array = ["sqr", "iso", "hex"]
+	var algs:Array = ["A*", "Dijkstra", "DP"]
+				
+				
+	var test_results:ConfigFile = ConfigFile.new()
+	var section:String
+	
+	var starts:Array
+	var ends:Array
+	
+	var time:String
+	
+	
+	
+	pathfinder.map_size = maps[4]
+	pathfinder.random_maze()
+	
+	for shape:String in shapes:
+		for alg:String in algs:
+			for map:Vector2i in maps:
+				pathfinder.map_size = map
+				pathfinder.map_initializer(0)
+				pathfinder.Preprocessor()
+				starts = [Vector2i(1,1)]
+				ends = [Vector2i(map.x-2, map.y-2)]
+				
+				match alg:
+					"A*":pathfinder.Algorithm = pathfinder.ASTAR
+					"Dijkstra":pathfinder.Algorithm = pathfinder.DIJKSTRA
+					"DP":pathfinder.Algorithm = pathfinder.DYNAMIC_PROG
+				
+				match shape:
+					"sqr":pathfinder.tile_set = tileset_sqr
+					"hex": pathfinder.tile_set = tileset_hex
+					"iso": pathfinder.tile_set = tileset_iso
+				
+				
+				var time_start: int
+				var time_end: int
+				if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
+					#if FileAccess.file_exists("user://DP_data"):
+						#pathfinder.load_from_file("user://DP_data")
+					#else:
+					time_start = Time.get_ticks_usec()
+					Paths = pathfinder.Pathfinder(starts, ends, false)
+					time_end = Time.get_ticks_usec()
+					for p in range(0, Paths.size()):
+						var pth: Array = Paths[p]
+						pth.reverse()
+					pathfinder.save_to_file("", "DP_data")
+				else:
+					time_start = Time.get_ticks_usec()
+					Paths = pathfinder.Pathfinder(starts, ends, false)
+					time_end = Time.get_ticks_usec()
+					
+				
+				
+				var time_delta: float
+				time_delta = time_end-time_start
+				var unit: String
+				if time_delta < 1000:
+					unit = " µs"
+				elif time_delta >= 1000 and time_delta < 1000000:
+					time_delta = time_delta/1000
+					unit = " ms"
+				else:
+					time_delta = time_delta/1000000
+					unit = "s"
+				time = str(time_delta) + unit
+				
+				section = shape+", "+alg+", "+str(map)
+				
+				var start_end:String = str(starts[0])+" / "+str(ends[0])
+				test_results.set_value(section, "start/end", start_end)
+				
+				test_results.set_value(section, "time", time)
+				
+				var Path:Array = Paths[0]
+				test_results.set_value(section, "path length", Path.size())
+				
+				test_results.save("user://test_results.cfg")
+
+				
+				var test_end_time = Time.get_ticks_usec()
+				var test_time_delta = test_end_time-test_start_time
+				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "testování proběhlo za "+test_time_delta+" µs"
+				pass

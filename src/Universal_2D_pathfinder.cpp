@@ -492,7 +492,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             if (!map_ready) {   // if map is not prepared do DP algorithm
                 UtilityFunctions::print("generating map");
                 bool update = false;
-                int max_DP_iter = 100;
+                int max_DP_iter = 10000;
                 Vector2i ct;    // current tile
                 
 

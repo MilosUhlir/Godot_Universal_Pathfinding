@@ -22,6 +22,7 @@ func _draw() -> void:
 	var line_width: int = 3
 	var circle_radius: int = 8
 	
+	#Open.clear()
 	Open = pathfinder.OPEN_list
 	print("Drawing Open and Closed lists")
 	if Open.is_empty() == false:
@@ -29,12 +30,14 @@ func _draw() -> void:
 			coord = pathfinder.map_to_local(coord)
 			draw_circle(coord, circle_radius, Color.ORANGE_RED)
 
+	#Closed.clear()
 	Closed = pathfinder.CLOSED_list
 	if Closed.is_empty() == false:
 		for coord in Closed:
 			coord = pathfinder.map_to_local(coord)
 			draw_circle(coord, circle_radius, Color.BLUE)
-	
+
+		
 	if Paths.is_empty() == false:
 		for path in Paths:
 			var prev_tile: Vector2
