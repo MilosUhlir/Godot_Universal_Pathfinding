@@ -140,6 +140,7 @@ func switch_map_layout() -> void:
 		1: pathfinder.tile_set = tileset_hex
 		2: pathfinder.tile_set = tileset_iso
 	pathfinder.map_initializer(0)
+	pathfinder.Preprocessor()
 
 
 func UI_visibility() -> void:
@@ -238,11 +239,12 @@ func _on_run_tests_pressed() -> void:
 	
 	
 	
-	pathfinder.map_size = maps[4]
+	pathfinder.map_size = maps[-1]
 	pathfinder.random_maze()
 	
 	for shape:String in shapes:
 		for alg:String in algs:
+			#pathfinder.map_initializer(1)
 			for map:Vector2i in maps:
 				pathfinder.map_size = map
 				pathfinder.map_initializer(0)
@@ -251,9 +253,13 @@ func _on_run_tests_pressed() -> void:
 				ends = [Vector2i(map.x-2, map.y-2)]
 				
 				match alg:
-					"A*":pathfinder.Algorithm = pathfinder.ASTAR
-					"Dijkstra":pathfinder.Algorithm = pathfinder.DIJKSTRA
-					"DP":pathfinder.Algorithm = pathfinder.DYNAMIC_PROG
+					"A*":
+						pathfinder.Algorithm = pathfinder.ASTAR
+					"Dijkstra":
+						pathfinder.Algorithm = pathfinder.DIJKSTRA
+					"DP":
+						pathfinder.Algorithm = pathfinder.DYNAMIC_PROG
+						pathfinder.map_initializer(1)
 				
 				match shape:
 					"sqr":pathfinder.tile_set = tileset_sqr
@@ -263,6 +269,10 @@ func _on_run_tests_pressed() -> void:
 				
 				var time_start: int
 				var time_end: int
+				var time1:int
+				var time2:int
+				var times:Array
+				times.clear()
 				if pathfinder.Algorithm == pathfinder.DYNAMIC_PROG:
 					#if FileAccess.file_exists("user://DP_data"):
 						#pathfinder.load_from_file("user://DP_data")
@@ -270,19 +280,68 @@ func _on_run_tests_pressed() -> void:
 					time_start = Time.get_ticks_usec()
 					Paths = pathfinder.Pathfinder(starts, ends, false)
 					time_end = Time.get_ticks_usec()
+					time1 = time_end-time_start
 					for p in range(0, Paths.size()):
 						var pth: Array = Paths[p]
 						pth.reverse()
 					pathfinder.save_to_file("", "DP_data")
+					time_start = Time.get_ticks_usec()
+					Paths = pathfinder.Pathfinder(starts, ends, false)
+					time_end = Time.get_ticks_usec()
+					time2 = time_end-time_start
+					times.append(time1)
+					times.append(time2)
+					
+					var unit: String
+					var time_strings: Array
+					for t in times:
+						var time_delta: float
+						time_delta = t
+						if time_delta < 1000:
+							unit = " µs"
+						elif time_delta >= 1000 and time_delta < 1000000:
+							time_delta = time_delta/1000
+							unit = " ms"
+						else:
+							time_delta = time_delta/1000000
+							unit = " s"
+						time_strings.append(str(time_delta)+unit)
+					time = time_strings[0]+" / "+time_strings[1]
+					
 				else:
 					time_start = Time.get_ticks_usec()
 					Paths = pathfinder.Pathfinder(starts, ends, false)
 					time_end = Time.get_ticks_usec()
 					
+					var time_delta: float
+					time_delta = time_end-time_start
+					var unit: String
+					if time_delta < 1000:
+						unit = " µs"
+					elif time_delta >= 1000 and time_delta < 1000000:
+						time_delta = time_delta/1000
+						unit = " ms"
+					else:
+						time_delta = time_delta/1000000
+						unit = "s"
+					time = str(time_delta) + unit
 				
+				section = shape+", "+alg+", "+str(map)
 				
+				var start_end:String = str(starts[0])+" / "+str(ends[0])
+				test_results.set_value(section, "start/end", start_end)
+				
+				test_results.set_value(section, "time", time)
+				
+				var path1:Array = Paths[0]
+				test_results.set_value(section, "path length", path1.size())
+				
+				test_results.save("user://test_results_A.cfg")
+
+				
+				var test_end_time = Time.get_ticks_usec()
 				var time_delta: float
-				time_delta = time_end-time_start
+				time_delta = test_end_time-test_start_time
 				var unit: String
 				if time_delta < 1000:
 					unit = " µs"
@@ -293,21 +352,5 @@ func _on_run_tests_pressed() -> void:
 					time_delta = time_delta/1000000
 					unit = "s"
 				time = str(time_delta) + unit
-				
-				section = shape+", "+alg+", "+str(map)
-				
-				var start_end:String = str(starts[0])+" / "+str(ends[0])
-				test_results.set_value(section, "start/end", start_end)
-				
-				test_results.set_value(section, "time", time)
-				
-				var Path:Array = Paths[0]
-				test_results.set_value(section, "path length", Path.size())
-				
-				test_results.save("user://test_results.cfg")
-
-				
-				var test_end_time = Time.get_ticks_usec()
-				var test_time_delta = test_end_time-test_start_time
-				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "testování proběhlo za "+str(test_time_delta)+" µs"
+				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "testování proběhlo za "+time+" µs"
 				pass

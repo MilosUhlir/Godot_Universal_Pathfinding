@@ -32,3 +32,7 @@ func random_maze() -> void:
 	
 	
 	pass
+
+
+func _on_tile_placer_mode_pressed() -> void:
+	pass # Replace with function body.
