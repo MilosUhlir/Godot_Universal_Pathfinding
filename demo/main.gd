@@ -211,8 +211,67 @@ func _on_clear_map_pressed() -> void:
 
 
 func _on_debug_pressed() -> void:
+	var runs:int = 45
+	var maps:Array = [
+		#Vector2i(20,10),
+		#Vector2i(50,25), 
+		#Vector2i(100,50), 
+		#Vector2i(200,100), 
+		Vector2i(500,250)
+		]
+	var shapes:Array = ["sqr", "iso"]
 	
-	pass # Replace with function body.
+	var godot_astar = AStarGrid2D.new()
+	
+	pathfinder.map_size = maps[-1]
+	seed(221208)
+	pathfinder.random_maze()
+	
+	for x in range(0, maps[-1].x-1):
+		for y in range(0, maps[-1].y-1):
+			if pathfinder.get_cell_atlas_coords(Vector2i(x,y)) == Vector2i(0,0):
+				godot_astar.set_point_solid(Vector2i(x,y))
+				pass
+	
+	
+	var time_delta:int
+	for map in maps:
+		print("-------------------------------------------")
+		print("map size: ", map)
+		for shape in shapes:
+			time_delta = 0
+			for r in range(0, runs):
+				match shape:
+					"sqr": 
+						godot_astar.cell_shape = AStarGrid2D.CELL_SHAPE_SQUARE
+						godot_astar.cell_size = Vector2i(64, 64)
+					"iso": 
+						godot_astar.cell_shape = AStarGrid2D.CELL_SHAPE_ISOMETRIC_RIGHT
+						godot_astar.cell_size = Vector2i(128, 64)
+						
+				godot_astar.region = Rect2i(0, 0, map.x, map.y)
+				godot_astar.update()
+				var path: Array = Array()
+				var TS = Time.get_ticks_usec()
+				path = godot_astar.get_id_path(Vector2i(1,1), Vector2i(map.x-2,map.y-2))
+				var TE = Time.get_ticks_usec()
+				time_delta += TE-TS
+			time_delta /= runs
+			var time_str:String
+			var unit: String
+			if time_delta < 1000:
+				unit = " µs"
+			elif time_delta >= 1000 and time_delta < 1000000:
+				time_delta = time_delta/1000
+				unit = " ms"
+			elif time_delta >= 1000000:
+				time_delta = time_delta/1000000
+				unit = " s"
+			time_str = str(time_delta) + unit
+			print("path on ", shape," map found in ", time_str, " on avg")
+			#print("path: ", path)
+			
+			
 
 
 func _on_run_tests_pressed() -> void:
@@ -302,7 +361,7 @@ func _on_run_tests_pressed() -> void:
 						elif time_delta >= 1000 and time_delta < 1000000:
 							time_delta = time_delta/1000
 							unit = " ms"
-						else:
+						elif time_delta >= 1000000:
 							time_delta = time_delta/1000000
 							unit = " s"
 						time_strings.append(str(time_delta)+unit)
@@ -321,9 +380,9 @@ func _on_run_tests_pressed() -> void:
 					elif time_delta >= 1000 and time_delta < 1000000:
 						time_delta = time_delta/1000
 						unit = " ms"
-					else:
+					elif time_delta >= 1000000:
 						time_delta = time_delta/1000000
-						unit = "s"
+						unit = " s"
 					time = str(time_delta) + unit
 				
 				section = shape+", "+alg+", "+str(map)
@@ -348,9 +407,9 @@ func _on_run_tests_pressed() -> void:
 				elif time_delta >= 1000 and time_delta < 1000000:
 					time_delta = time_delta/1000
 					unit = " ms"
-				else:
+				elif time_delta >= 1000000:
 					time_delta = time_delta/1000000
-					unit = "s"
+					unit = " s"
 				time = str(time_delta) + unit
 				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "testování proběhlo za "+time+" µs"
 				pass

@@ -63,9 +63,9 @@ void Universal_2D_Pathfinder::_bind_methods() {
     BIND_ENUM_CONSTANT(CHEBYSHEV);
     BIND_ENUM_CONSTANT(OCTILE);
     
-    ClassDB::bind_method(D_METHOD("set_button"), &Universal_2D_Pathfinder::set_button);
-    ClassDB::bind_method(D_METHOD("get_button"), &Universal_2D_Pathfinder::get_button);
-    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug button"), "set_button", "get_button");
+    // ClassDB::bind_method(D_METHOD("set_button"), &Universal_2D_Pathfinder::set_button);
+    // ClassDB::bind_method(D_METHOD("get_button"), &Universal_2D_Pathfinder::get_button);
+    // ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug button"), "set_button", "get_button");
 
     ClassDB::bind_method(D_METHOD("set_diagonal"), &Universal_2D_Pathfinder::set_diagonal);
     ClassDB::bind_method(D_METHOD("get_diagonal"), &Universal_2D_Pathfinder::get_diagonal);
@@ -452,7 +452,8 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 return Array();
             };
 
-            Label_Calculator(OPEN_list[0], end_node, false, true);
+            double f_n = Label_Calculator(OPEN_list[0], end_node, false, true);
+            Preprocessed_Map.write[start_node.x].write[start_node.y].Node_label = f_n;
             bool exit_flag = false;
             Vector2i previous_node;
             Vector2i current_node;
@@ -460,7 +461,31 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             int iter = 1;
             while (exit_flag == false) {
 
-                current_node = OPEN_list.pop_front();
+
+                // pull node with the smallest f(i) value in OPEN, if multiple check if any is end node
+                Array mins = find_minimum_label(OPEN_list);
+                // // UtilityFunctions::print("minimums: ", mins);
+                if (mins.size() > 1) {
+                    for (int i = 0; i < mins.size(); i++) {
+                        if (mins[i] == end_node) {
+                            // exit_flag = true;
+                            min = mins[i];
+                            break;
+                        } else {
+                            min = mins.front();
+                        }
+                    }
+                } else if (mins.size() == 1) {
+                    min = mins[0];
+                } else {
+                    // UtilityFunctions::print("Dijkstra exited with: No minimum found! After ", iter, " iterations");
+                    break;
+                }
+                int idx = OPEN_list.find(min, 0);
+                current_node = OPEN_list.pop_at(idx);
+
+
+                // current_node = OPEN_list.pop_front();
                 if (current_node == end_node) {
                     exit_flag = true;
                 }
@@ -472,30 +497,38 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
 
                 for (int i = 0; i < Preprocessed_Map[current_node.x][current_node.y].Node_neighbors.size(); i++) {
                     Vector2i curr_nbr = Preprocessed_Map[current_node.x][current_node.y].Node_neighbors[i];
-                    bool open_has = OPEN_list.has(curr_nbr);
-                    bool closed_has = CLOSED_list.has(curr_nbr);
+                    // bool open_has = OPEN_list.has(curr_nbr);
                     bool diag;
                     if (i >= 4) {
                         diag = true;
                     } else {
                         diag = false;
                     }
+
+                    double delta = abs(Preprocessed_Map[curr_nbr.x][curr_nbr.y].Node_label - 1e5);
+                            if (delta < 1e-9) {
+                                OPEN_list.append(curr_nbr);
+                            }
+                    
                     double f_n = Label_Calculator(curr_nbr, end_node, diag, false);
-                    if (open_has == true || closed_has == true) {
-                        if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Distance_to) {
+                    // if (open_has == true) {
+                        if (f_n < Preprocessed_Map[curr_nbr.x][curr_nbr.y].Node_label) {
                             // Label_Calculator(curr_nbr, end_node, true);
                             Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
+                            Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = f_n;
                             Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
                             // if (closed_has && !open_has) {
-                            //     OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
-                            // }
-                        }
-                    } else if (open_has == false && closed_has == false) {
-                    //     double f_n = Label_Calculator(curr_nbr, end_node, true);
-                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
-                        Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
-                        OPEN_list.append(curr_nbr);
-                    }
+                                //     OPEN_list.append(CLOSED_list.pop_at(CLOSED_list.find(curr_nbr, 0)));
+                                // }
+                        } 
+                        // else {
+                        //     // } else if (open_has == false) {
+                        //         //     double f_n = Label_Calculator(curr_nbr, end_node, true);
+                        //         Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Distance_to = f_n;
+                        //         Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_label = f_n;
+                        //         Preprocessed_Map.write[curr_nbr.x].write[curr_nbr.y].Node_parent = current_node;
+                        //         // OPEN_list.append(curr_nbr);
+                        //     }
                 }
 
                 if (exit_flag == true) {
@@ -848,6 +881,7 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
                 h = (min * (sqrt(2) - 1)) + max;
                 break;
             }
+            // UtilityFunctions::print("heuristic of node ", _node, "is: ", h);
             if (overwrite == true) {
                 Preprocessed_Map.write[_node.x].write[_node.y].Distance_to = parent_distance + cost + cost_mod;
                 Preprocessed_Map.write[_node.x].write[_node.y].Node_label = parent_distance + cost + cost_mod + h;
@@ -869,12 +903,12 @@ Universal_2D_Pathfinder::~Universal_2D_Pathfinder() {
             button = but;
             if (button == true) {
                 // map_initializer(0);
-                Preprocessor();
-                Array t_s;
-                t_s.append(Vector2i(0,0));
-                Array t_e;
-                t_e.append(Vector2i(2,2));
-                Array path = Pathfinder(t_s, t_e, true);
+                // Preprocessor();
+                // Array t_s;
+                // t_s.append(Vector2i(0,0));
+                // Array t_e;
+                // t_e.append(Vector2i(2,2));
+                // Array path = Pathfinder(t_s, t_e, true);
                 // UtilityFunctions::print("path: ", path);
 
                 // TypedArray<Vector2i> test;

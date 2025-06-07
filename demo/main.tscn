@@ -90,7 +90,6 @@ popup/item_6/text = "Octile"
 popup/item_6/id = 6
 
 [node name="Debug" type="Button" parent="CanvasLayer/UI/Main_UI"]
-visible = false
 layout_mode = 2
 text = "Debug"
 
@@ -203,7 +202,6 @@ texture = ExtResource("3_uea5g")
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
 ignore_rotation = false
-zoom = Vector2(0.5, 0.5)
 
 [connection signal="pressed" from="CanvasLayer/UI/Main_UI/tile_placer_mode" to="." method="tile_placer_mode_switch"]
 [connection signal="toggled" from="CanvasLayer/UI/Main_UI/Diagonal_movement" to="." method="_on_diagonal_movement_toggled"]

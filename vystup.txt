@@ -1,0 +1,1 @@
+Algoritmus & Velikost mapy & Start/Cíl & Diagonály & HW & Čas & Délka cesty \\ \hline
