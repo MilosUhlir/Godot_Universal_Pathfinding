@@ -80,7 +80,7 @@ public:
 		Vector<Vector2i> Node_neighbors;				// array of coordinates of neighboring nodes
 		float Node_cost = 0;							// cost of movement onto this node - user defined from cfg file
 		float Distance_to = 0;							// current distance from start to this point g(n)
-		double Node_label = 1e5;						// the total cost to reach this node from start point f(n) = g(n) = h(n)
+		double Node_label = 1e10;						// the total cost to reach this node from start point f(n) = g(n) = h(n)
 		bool Reachable = false;							// if node can be reached - user defined from cfg file
 		Node_Data();
 	};

@@ -211,27 +211,35 @@ func _on_clear_map_pressed() -> void:
 
 
 func _on_debug_pressed() -> void:
-	var runs:int = 45
+	var runs:int = 1000
 	var maps:Array = [
-		#Vector2i(20,10),
-		#Vector2i(50,25), 
-		#Vector2i(100,50), 
-		#Vector2i(200,100), 
+		Vector2i(20,10),
+		Vector2i(50,25), 
+		Vector2i(100,50), 
+		Vector2i(200,100), 
 		Vector2i(500,250)
 		]
-	var shapes:Array = ["sqr", "iso"]
+	var shapes:Array = [
+		"sqr", 
+		#"iso"
+		]
 	
 	var godot_astar = AStarGrid2D.new()
+	godot_astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	
-	pathfinder.map_size = maps[-1]
+	pathfinder.map_size = Vector2i(500, 250)
 	seed(221208)
 	pathfinder.random_maze()
+	
+	godot_astar.region = Rect2i(0, 0, 499, 249)
+	godot_astar.update()
 	
 	for x in range(0, maps[-1].x-1):
 		for y in range(0, maps[-1].y-1):
 			if pathfinder.get_cell_atlas_coords(Vector2i(x,y)) == Vector2i(0,0):
-				godot_astar.set_point_solid(Vector2i(x,y))
-				pass
+				godot_astar.set_point_solid(Vector2i(x,y), true)
+			else:
+				godot_astar.set_point_solid(Vector2i(x,y), false)
 	
 	
 	var time_delta:int
@@ -240,6 +248,7 @@ func _on_debug_pressed() -> void:
 		print("map size: ", map)
 		for shape in shapes:
 			time_delta = 0
+			var path: Array = Array()
 			for r in range(0, runs):
 				match shape:
 					"sqr": 
@@ -249,9 +258,8 @@ func _on_debug_pressed() -> void:
 						godot_astar.cell_shape = AStarGrid2D.CELL_SHAPE_ISOMETRIC_RIGHT
 						godot_astar.cell_size = Vector2i(128, 64)
 						
-				godot_astar.region = Rect2i(0, 0, map.x, map.y)
+				#godot_astar.region = Rect2i(0, 0, map.x, map.y)
 				godot_astar.update()
-				var path: Array = Array()
 				var TS = Time.get_ticks_usec()
 				path = godot_astar.get_id_path(Vector2i(1,1), Vector2i(map.x-2,map.y-2))
 				var TE = Time.get_ticks_usec()
@@ -268,13 +276,14 @@ func _on_debug_pressed() -> void:
 				time_delta = time_delta/1000000
 				unit = " s"
 			time_str = str(time_delta) + unit
-			print("path on ", shape," map found in ", time_str, " on avg")
+			print("path on ", shape," map found in ", time_str, " on avg, length: ", path.size())
 			#print("path: ", path)
 			
 			
 
 
 func _on_run_tests_pressed() -> void:
+	var runs:int = 100
 	var test_start_time = Time.get_ticks_usec()
 	var maps:Array = [
 		Vector2i(20,10),
@@ -284,10 +293,18 @@ func _on_run_tests_pressed() -> void:
 		Vector2i(500,250)
 		]
 	
-	var shapes:Array = ["sqr", "iso", "hex"]
-	var algs:Array = ["A*", "Dijkstra", "DP"]
-				
-				
+	var shapes:Array = [
+		"sqr", 
+		#"iso", 
+		#"hex"
+		]
+	var algs:Array = [
+		"A*", 
+		#"Dijkstra", 
+		"DP"
+		]
+		
+		
 	var test_results:ConfigFile = ConfigFile.new()
 	var section:String
 	
@@ -296,9 +313,10 @@ func _on_run_tests_pressed() -> void:
 	
 	var time:String
 	
+	pathfinder.diagonal_movement = false
 	
-	
-	pathfinder.map_size = maps[-1]
+	pathfinder.map_size = Vector2i(500, 250)
+	seed(221208)
 	pathfinder.random_maze()
 	
 	for shape:String in shapes:
@@ -336,20 +354,21 @@ func _on_run_tests_pressed() -> void:
 					#if FileAccess.file_exists("user://DP_data"):
 						#pathfinder.load_from_file("user://DP_data")
 					#else:
-					time_start = Time.get_ticks_usec()
-					Paths = pathfinder.Pathfinder(starts, ends, false)
-					time_end = Time.get_ticks_usec()
-					time1 = time_end-time_start
-					for p in range(0, Paths.size()):
-						var pth: Array = Paths[p]
-						pth.reverse()
-					pathfinder.save_to_file("", "DP_data")
-					time_start = Time.get_ticks_usec()
-					Paths = pathfinder.Pathfinder(starts, ends, false)
-					time_end = Time.get_ticks_usec()
-					time2 = time_end-time_start
-					times.append(time1)
-					times.append(time2)
+					for r in range(0, runs):
+						time_start = Time.get_ticks_usec()
+						Paths = pathfinder.Pathfinder(starts, ends, false)
+						time_end = Time.get_ticks_usec()
+						time1 += time_end-time_start
+						for p in range(0, Paths.size()):
+							var pth: Array = Paths[p]
+							pth.reverse()
+						pathfinder.save_to_file("", "DP_data")
+						time_start = Time.get_ticks_usec()
+						Paths = pathfinder.Pathfinder(starts, ends, false)
+						time_end = Time.get_ticks_usec()
+						time2 += time_end-time_start
+					times.append(time1/runs)
+					times.append(time2/runs)
 					
 					var unit: String
 					var time_strings: Array
@@ -368,9 +387,10 @@ func _on_run_tests_pressed() -> void:
 					time = time_strings[0]+" / "+time_strings[1]
 					
 				else:
-					time_start = Time.get_ticks_usec()
-					Paths = pathfinder.Pathfinder(starts, ends, false)
-					time_end = Time.get_ticks_usec()
+					for r in range(0, runs):
+						time_start = Time.get_ticks_usec()
+						Paths = pathfinder.Pathfinder(starts, ends, false)
+						time_end = Time.get_ticks_usec()
 					
 					var time_delta: float
 					time_delta = time_end-time_start

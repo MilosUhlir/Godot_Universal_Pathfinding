@@ -21,22 +21,27 @@ func _draw() -> void:
 	
 	var line_width: int = 3
 	var circle_radius: int = 8
+	var map:Array = pathfinder.save_to_code()
 	
 	#Open.clear()
 	Open = pathfinder.OPEN_list
 	print("Drawing Open and Closed lists")
 	if Open.is_empty() == false:
 		for coord in Open:
-			coord = pathfinder.map_to_local(coord)
-			draw_circle(coord, circle_radius, Color.ORANGE_RED)
+			#await get_tree().create_timer(1.0).timeout
+			var coord_loc = pathfinder.map_to_local(coord)
+			draw_circle(coord_loc, circle_radius, Color.ORANGE_RED)
+			draw_line(coord_loc, pathfinder.map_to_local(map[coord.x][coord.y]["parent"]), Color.ORANGE_RED)
 
 	#Closed.clear()
 	Closed = pathfinder.CLOSED_list
 	if Closed.is_empty() == false:
 		for coord in Closed:
-			coord = pathfinder.map_to_local(coord)
-			draw_circle(coord, circle_radius, Color.BLUE)
-
+			print("drawing at: ", coord)
+			#await get_tree().create_timer(1.0).timeout
+			var coord_loc = pathfinder.map_to_local(coord)
+			draw_circle(coord_loc, circle_radius, Color.BLUE)
+			draw_line(coord_loc, pathfinder.map_to_local(map[coord.x][coord.y]["parent"]), Color.BLUE)
 		
 	if Paths.is_empty() == false:
 		for path in Paths:
@@ -44,6 +49,7 @@ func _draw() -> void:
 			var curr_tile: Vector2
 			var i = 0
 			for coord in path:
+				#await get_tree().create_timer(1.0).timeout
 				coord = pathfinder.map_to_local(coord)
 				curr_tile = coord
 				draw_circle(coord, circle_radius, Color.YELLOW)
