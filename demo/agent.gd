@@ -4,7 +4,7 @@ extends CharacterBody2D
 
 var path: Array
 
-var speed = 200
+var speed = 500
 
 var current_tile: Vector2
 var next_tile:Vector2

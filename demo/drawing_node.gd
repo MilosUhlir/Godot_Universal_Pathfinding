@@ -25,7 +25,7 @@ func _draw() -> void:
 	
 	#Open.clear()
 	Open = pathfinder.OPEN_list
-	print("Drawing Open and Closed lists")
+	#print("Drawing Open and Closed lists")
 	if Open.is_empty() == false:
 		for coord in Open:
 			#await get_tree().create_timer(1.0).timeout
@@ -37,7 +37,7 @@ func _draw() -> void:
 	Closed = pathfinder.CLOSED_list
 	if Closed.is_empty() == false:
 		for coord in Closed:
-			print("drawing at: ", coord)
+			#print("drawing at: ", coord)
 			#await get_tree().create_timer(1.0).timeout
 			var coord_loc = pathfinder.map_to_local(coord)
 			draw_circle(coord_loc, circle_radius, Color.BLUE)

@@ -211,12 +211,12 @@ func _on_clear_map_pressed() -> void:
 
 
 func _on_debug_pressed() -> void:
-	var runs:int = 1000
+	var runs:int = 10
 	var maps:Array = [
-		Vector2i(20,10),
-		Vector2i(50,25), 
-		Vector2i(100,50), 
-		Vector2i(200,100), 
+		#Vector2i(20,10),
+		#Vector2i(50,25), 
+		#Vector2i(100,50), 
+		#Vector2i(200,100), 
 		Vector2i(500,250)
 		]
 	var shapes:Array = [
@@ -226,29 +226,41 @@ func _on_debug_pressed() -> void:
 	
 	var godot_astar = AStarGrid2D.new()
 	godot_astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	godot_astar.update()
 	
-	pathfinder.map_size = Vector2i(500, 250)
+	pathfinder.map_size = maps[-1]#Vector2i(500, 250)
 	seed(221208)
 	pathfinder.random_maze()
 	
-	godot_astar.region = Rect2i(0, 0, 499, 249)
+	godot_astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	godot_astar.update()
+	godot_astar.cell_shape = AStarGrid2D.CELL_SHAPE_SQUARE
+	godot_astar.update()
+	godot_astar.cell_size = Vector2i(64, 64)
+	godot_astar.update()
+	godot_astar.region = Rect2i(0, 0, 500, 250)
 	godot_astar.update()
 	
 	for x in range(0, maps[-1].x-1):
+		var x_pos = x
 		for y in range(0, maps[-1].y-1):
-			if pathfinder.get_cell_atlas_coords(Vector2i(x,y)) == Vector2i(0,0):
+			var y_pos = y
+			if x == 5 and y == 2:
+				pass
+			var curr_tile:Vector2i = pathfinder.get_cell_atlas_coords(Vector2i(x,y))
+			if curr_tile == Vector2i(0,0):
 				godot_astar.set_point_solid(Vector2i(x,y), true)
 			else:
 				godot_astar.set_point_solid(Vector2i(x,y), false)
 	
 	
+	var path: Array
 	var time_delta:int
 	for map in maps:
 		print("-------------------------------------------")
 		print("map size: ", map)
 		for shape in shapes:
 			time_delta = 0
-			var path: Array = Array()
 			for r in range(0, runs):
 				match shape:
 					"sqr": 
@@ -260,8 +272,10 @@ func _on_debug_pressed() -> void:
 						
 				#godot_astar.region = Rect2i(0, 0, map.x, map.y)
 				godot_astar.update()
+				var start = Vector2i(1,1)
+				var end = Vector2i(map.x-3,map.y-3)
 				var TS = Time.get_ticks_usec()
-				path = godot_astar.get_id_path(Vector2i(1,1), Vector2i(map.x-2,map.y-2))
+				path = godot_astar.get_id_path(start, end)
 				var TE = Time.get_ticks_usec()
 				time_delta += TE-TS
 			time_delta /= runs
@@ -278,18 +292,23 @@ func _on_debug_pressed() -> void:
 			time_str = str(time_delta) + unit
 			print("path on ", shape," map found in ", time_str, " on avg, length: ", path.size())
 			#print("path: ", path)
-			
+			path.reverse()
+			$agent.path = path
+			$Drawing_node.Paths = [path]
+			$Drawing_node.queue_redraw()
+	#$Drawing_node.Paths = path
+	#$Drawing_node.queue_redraw()
 			
 
 
 func _on_run_tests_pressed() -> void:
-	var runs:int = 100
+	var runs:int = 10
 	var test_start_time = Time.get_ticks_usec()
 	var maps:Array = [
-		Vector2i(20,10),
-		Vector2i(50,25), 
-		Vector2i(100,50), 
-		Vector2i(200,100), 
+		#Vector2i(20,10),
+		#Vector2i(50,25), 
+		#Vector2i(100,50), 
+		#Vector2i(200,100), 
 		Vector2i(500,250)
 		]
 	
@@ -301,7 +320,7 @@ func _on_run_tests_pressed() -> void:
 	var algs:Array = [
 		"A*", 
 		#"Dijkstra", 
-		"DP"
+		#"DP"
 		]
 		
 		
@@ -315,7 +334,7 @@ func _on_run_tests_pressed() -> void:
 	
 	pathfinder.diagonal_movement = false
 	
-	pathfinder.map_size = Vector2i(500, 250)
+	pathfinder.map_size = maps[-1]#Vector2i(500, 250)
 	seed(221208)
 	pathfinder.random_maze()
 	
@@ -327,7 +346,7 @@ func _on_run_tests_pressed() -> void:
 				pathfinder.map_initializer(0)
 				pathfinder.Preprocessor()
 				starts = [Vector2i(1,1)]
-				ends = [Vector2i(map.x-2, map.y-2)]
+				ends = [Vector2i(map.x-3, map.y-3)]
 				
 				match alg:
 					"A*":
@@ -432,4 +451,9 @@ func _on_run_tests_pressed() -> void:
 					unit = " s"
 				time = str(time_delta) + unit
 				$CanvasLayer/UI/stat_display/Pathfinder_time.text = "testování proběhlo za "+time+" µs"
+				
+				$agent.path = Paths[0]
+				$Drawing_node.Paths = Paths
+				$Drawing_node.queue_redraw()
+				
 				pass
